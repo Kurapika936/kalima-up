@@ -31,6 +31,8 @@ Installée sur l'iPhone et le PC du propriétaire. Toujours répondre en frança
 - « Déjà dans ton carnet » tolère les petites différences d'orthographe (`djKeys` : chokran = choukran
   = shukran, 3afak = 3afek, bslama = beslama, mzyan = mzian…).
 - Pas de DeepL (il ne gère pas le darija) : Claude seul.
+- Couleurs : thème marocain à elle (sable, rouge, vert, safran, frise de zellige sous le titre), différent
+  de Word Up. Variables CSS en haut de `index.html` ; `--blue` = couleur principale (rouge), nom gardé de Word Up.
 
 ## Cohabitation avec Word Up (même site kurapika936.github.io)
 - Clés localStorage : toutes préfixées `kalima-up-` (Word Up utilise `carnet-anglais-`). Ne jamais

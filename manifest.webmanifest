@@ -5,8 +5,8 @@
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f5f7fb",
-  "theme_color": "#c1272d",
+  "background_color": "#f8f1e6",
+  "theme_color": "#f8f1e6",
   "icons": [
     { "src": "kalima-192.png", "sizes": "192x192", "type": "image/png" },
     { "src": "kalima-512.png", "sizes": "512x512", "type": "image/png" }
