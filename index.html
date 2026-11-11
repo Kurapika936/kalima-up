@@ -1,0 +1,1958 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Kalima Up</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Kalima Up">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#f5f7fb" id="themeColor">
+<script>
+// Apply the saved theme before the page paints (no flash).
+(function(){
+  var t="auto"; try{ t=localStorage.getItem("kalima-up-theme")||"auto"; }catch(e){}
+  var dark = t==="dark" || (t==="auto" && matchMedia("(prefers-color-scheme: dark)").matches);
+  document.documentElement.setAttribute("data-theme", dark?"dark":"light");
+  document.getElementById("themeColor").setAttribute("content", dark?"#11152a":"#f5f7fb");
+})();
+</script>
+<link rel="apple-touch-icon" href="kalima-180.png">
+<link rel="icon" type="image/png" href="kalima-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+:root{
+  --paper:#f5f7fb; --card:#ffffff; --ink:#1b2440; --muted:#5d6782; --line:#dde2ee;
+  --blue:#2546c7; --blue-soft:#e6ebfb; --hl:#ffe46b; --hl-ink:#5a4a00; --ok:#1f7a4d; --ok-soft:#e2f4ea; --danger:#b3261e;
+  --f-display: ui-rounded, "SF Pro Rounded", -apple-system, system-ui, sans-serif;
+  --f-body: -apple-system, BlinkMacSystemFont, system-ui, "Segoe UI", sans-serif;
+  color-scheme: light;
+}
+:root[data-theme="dark"]{
+  --paper:#11152a; --card:#1a2038; --ink:#e7eaf6; --muted:#9aa3c2; --line:#2c3454;
+  --blue:#8ea6ff; --blue-soft:#232d55; --hl:#e8c93c; --hl-ink:#2a2200; --ok:#6fd3a0; --ok-soft:#173a2a; --danger:#ff8a80; color-scheme:dark}
+body{transition:background-color .25s,color .25s}
+@media (prefers-reduced-motion:reduce){body{transition:none}}
+header{display:flex;gap:12px;align-items:center;justify-content:space-between}
+header > div{min-width:0}
+.themeBtn{flex:none;width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:var(--card);font-size:22px;line-height:1;cursor:pointer;display:grid;place-items:center;padding:0}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5}
+.wrap{max-width:760px;margin:0 auto;
+  padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right));
+  padding-top:calc(18px + env(safe-area-inset-top));padding-bottom:calc(48px + env(safe-area-inset-bottom));
+  display:flex;flex-direction:column;gap:20px}
+h1{font-family:var(--f-display);font-weight:700;font-size:32px;line-height:1.05;margin:0;letter-spacing:-.01em}
+h1 .en{color:var(--blue)}
+.sub{color:var(--muted);margin:6px 0 0;max-width:60ch;font-size:15px}
+.notice{background:var(--hl);color:var(--hl-ink);padding:10px 14px;border-radius:10px;margin:0;font-size:15px}
+
+form.add{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;display:grid;gap:14px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pair.single{grid-template-columns:1fr}
+.result{display:flex;align-items:center;gap:12px;background:var(--blue-soft);border-radius:14px;padding:14px 14px 14px 16px;animation:resIn .25s ease}
+.result .rflag{font-size:26px;line-height:1;flex:none}
+.result .rtext{flex:1;min-width:0;font-family:var(--f-display);font-weight:700;font-size:21px;line-height:1.25;color:var(--blue);overflow-wrap:anywhere}
+.result .icon{flex:none;font-size:20px}
+.result{flex-direction:column;align-items:stretch}
+.result .rmain{display:flex;align-items:center;gap:12px}
+.ralts{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13px;color:var(--muted)}
+.ralts button{font:inherit;font-size:14px;border:1px solid var(--blue);color:var(--blue);background:var(--card);border-radius:999px;padding:4px 10px;cursor:pointer}
+.rex{display:flex;align-items:center;gap:10px;border-top:1px solid var(--line);padding-top:10px}
+.rex-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;overflow-wrap:anywhere}
+.rex-en{font-style:italic;color:var(--ink)}
+.rex-fr{font-size:14px;color:var(--muted)}
+.rtip{margin:0;font-size:14px;color:var(--ink)}
+.entry .ex{grid-column:1/-1;margin:0;font-size:14px;color:var(--muted);overflow-wrap:anywhere}
+.entry .ex i{color:var(--ink)}
+.face .ex{font-size:15px;color:var(--muted);max-width:50ch}
+.face .ex i{color:var(--ink)}
+.face .tip{font-size:14px;max-width:50ch}
+.result .acts{display:flex;flex-direction:column;gap:4px;flex:none}
+.result .icon.retry{border-radius:10px;transition:background .2s}
+.result .icon.retry.attn{background:var(--hl);color:var(--hl-ink);animation:nudge 1.2s ease-in-out 2}
+@keyframes nudge{0%,100%{transform:rotate(0)}50%{transform:rotate(180deg)}}
+@media (prefers-reduced-motion:reduce){.result .icon.retry.attn{animation:none}}
+@keyframes resIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.result{animation:none}}
+.seg.modeSeg{display:grid;grid-template-columns:1fr 1fr;width:100%}
+.seg.fullSeg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;width:100%}
+.seg.fullSeg button{width:100%;padding:9px 6px}
+.seg.filterSeg{display:grid;grid-template-columns:repeat(3,1fr);width:100%;flex:1 1 100%}
+.seg.filterSeg button{width:100%;padding:9px 6px}
+.modeSeg button{width:100%;font-size:16px;padding:10px 8px;display:flex;align-items:center;justify-content:center;gap:6px}
+.modeSeg .count{font-size:12px;font-weight:700;background:var(--blue-soft);color:var(--blue);border-radius:999px;padding:0 7px;font-variant-numeric:tabular-nums}
+.modeSeg button[aria-pressed=true] .count{background:var(--card)}
+.clearable{position:relative;display:block}
+.clearable input{padding-right:46px}
+.clearBtn{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:30px;height:30px;border-radius:50%;border:0;background:var(--line);color:var(--muted);font:inherit;font-size:14px;font-weight:700;line-height:1;cursor:pointer;display:grid;place-items:center;padding:0}
+.clearBtn:active{background:var(--muted);color:var(--card)}
+.folderRow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.folderLabel{flex-direction:row;font-size:14px;text-transform:none;letter-spacing:0;color:var(--ink);font-weight:600}
+#folderSel,#voiceSel{font:inherit;font-size:16px;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:8px 10px;flex:1 1 180px;min-width:0;max-width:100%}
+.folderHint{font-size:13px;color:var(--blue)}
+#voiceSel{flex:none;width:100%;text-transform:none;letter-spacing:0;font-weight:400}
+.folderChips{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 6px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.folderChips::-webkit-scrollbar{display:none}
+.folderChips button{flex:none;font:inherit;font-size:14px;white-space:nowrap;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:7px 12px;cursor:pointer}
+.folderChips button[aria-pressed=true]{background:var(--blue);border-color:var(--blue);color:var(--card);font-weight:700}
+.folderChips .n{font-size:12px;opacity:.75;margin-left:4px;font-variant-numeric:tabular-nums}
+.folderChips .add{color:var(--blue);font-weight:700}
+.chip.fchip{background:transparent;padding:0 2px;font-size:16px;text-transform:none;letter-spacing:0;border:0}
+.entry .meta .spacer{min-width:0}
+.entry .meta .chip.flags{font-size:13px}
+.entry .meta .icon{padding:6px 6px}
+.folderMgr{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.folderMgr li{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:6px 0;border-bottom:1px solid var(--line)}
+.folderMgr li:last-child{border-bottom:0}
+.folderMgr .fname{flex:1;min-width:0;font-weight:600;overflow-wrap:anywhere}
+.folderMgr .fcount{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.folderMgr .confirmRow{flex-basis:100%;display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:14px}
+dialog#folderDlg{border:1px solid var(--line);border-radius:18px;background:var(--card);color:var(--ink);padding:18px;width:min(420px,calc(100% - 32px))}
+dialog#folderDlg::backdrop{background:rgba(10,14,30,.45)}
+dialog#folderDlg form{display:flex;flex-direction:column;gap:14px}
+dialog#folderDlg h2{margin:0;font-family:var(--f-display);font-size:20px}
+.emojiPick{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.emojiPick button{font-size:22px;line-height:1;padding:8px 0;border:1px solid var(--line);background:var(--paper);border-radius:10px;cursor:pointer}
+.emojiPick button[aria-pressed=true]{border-color:var(--blue);background:var(--blue-soft);box-shadow:0 0 0 2px var(--blue) inset}
+.selRow{display:flex;align-items:center;gap:8px;margin:-4px 0}
+.btn.small{padding:7px 12px;font-size:14px;border-radius:10px}
+.entry{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+button.chip.fchip{cursor:pointer;border-radius:8px}
+button.chip.fchip:hover{background:var(--blue-soft)}
+.entry.lifted{opacity:.45;transform:scale(.98);transition:transform .15s,opacity .15s}
+.dragGhost{position:fixed;z-index:20;pointer-events:none;transform:translate(-50%,-130%);background:var(--blue);color:var(--card);font-weight:700;font-size:15px;padding:8px 14px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.25);max-width:70vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.list.selecting{padding-bottom:84px}
+.list.selecting .entry{position:relative;padding-left:46px;cursor:pointer}
+.list.selecting .entry::before{content:"";position:absolute;left:14px;top:16px;width:22px;height:22px;border-radius:50%;border:2px solid var(--line);background:var(--card);display:grid;place-items:center;font-size:13px;font-weight:800;color:var(--card)}
+.list.selecting .entry.selected{border-color:var(--blue);background:var(--blue-soft)}
+.list.selecting .entry.selected::before{content:"✓";background:var(--blue);border-color:var(--blue)}
+.list.selecting .entry .meta button{pointer-events:none}
+.list.selecting .entry .meta .icon{display:none}
+.entry .meta .chip{white-space:nowrap}
+.selBar{position:fixed;left:0;right:0;bottom:0;z-index:7;display:flex;align-items:center;gap:8px;background:var(--card);border-top:1px solid var(--line);padding:10px max(16px,env(safe-area-inset-left)) calc(10px + env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-right));font-size:15px;font-weight:600}
+.selBar .btn:disabled{opacity:.45}
+.sheet{position:fixed;left:50%;transform:translateX(-50%);bottom:0;z-index:8;width:min(640px,100%);background:var(--card);border:1px solid var(--line);border-bottom:0;border-radius:20px 20px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.18);padding:14px 16px calc(16px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:12px}
+.sheetHead{display:flex;align-items:center;gap:8px;font-weight:700;font-size:16px}
+.sheetHead span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;max-height:45vh;overflow-y:auto}
+.tile{font:inherit;display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 6px;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:14px;cursor:pointer;min-width:0}
+.tile .te{font-size:26px;line-height:1}
+.tile .tn{font-size:13px;font-weight:600;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tile.current{border-color:var(--blue);box-shadow:0 0 0 2px var(--blue) inset}
+.tile.hover{background:var(--blue);color:var(--card);border-color:var(--blue);transform:scale(1.05)}
+.tile.add{color:var(--blue)}
+@media (prefers-reduced-motion:reduce){.entry.lifted,.tile.hover{transition:none;transform:none}}
+.sortSheet{max-height:85vh;overflow-y:auto}
+.sortBody{display:flex;flex-direction:column;gap:12px}
+.sortIntro{margin:0;font-size:14px;color:var(--muted)}
+.sortCheck{flex-direction:row;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font-weight:400;font-size:14px;color:var(--ink)}
+.sortPreview{display:flex;flex-direction:column;gap:8px}
+.sortGroup{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--paper)}
+.sortGroup h3{margin:0 0 4px;font-size:15px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.sortGroup .new{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;background:var(--hl);color:var(--hl-ink);border-radius:999px;padding:1px 7px}
+.sortGroup .cnt{font-size:13px;font-weight:400;color:var(--muted)}
+.sortGroup p{margin:0;font-size:14px;color:var(--muted);overflow-wrap:anywhere}
+.switchRow{display:flex;align-items:center;gap:12px;background:none;border:0;padding:2px 0;font:inherit;font-size:15px;color:var(--ink);cursor:pointer;text-align:left;justify-self:start}
+.switchRow .track{flex:none;width:46px;height:28px;border-radius:999px;background:var(--line);position:relative;transition:background .2s}
+.switchRow .track::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .2s}
+.switchRow[aria-checked=true] .track{background:var(--blue)}
+.switchRow[aria-checked=true] .track::after{transform:translateX(18px)}
+@media (prefers-reduced-motion:reduce){.switchRow .track,.switchRow .track::after{transition:none}}
+@media (max-width:560px){.pair{grid-template-columns:1fr}}
+label{display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;min-width:0}
+label .flag{font-weight:400;text-transform:none;letter-spacing:0}
+/* 17px+ prevents iOS from zooming into fields */
+input[type=text],input[type=search],textarea{font:inherit;font-size:17px;text-transform:none;letter-spacing:0;font-weight:400;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:11px 12px;width:100%;-webkit-appearance:none;appearance:none}
+textarea{resize:vertical;min-height:46px}
+input:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:999px;padding:3px;gap:2px;background:var(--paper)}
+.seg button{border:0;background:transparent;color:var(--muted);font:inherit;font-size:14px;padding:7px 12px;border-radius:999px;cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--blue);color:var(--card);font-weight:700}
+.pasteBtn{width:100%;display:flex;align-items:center;justify-content:center;gap:8px}
+.swap{justify-self:center;display:inline-flex;align-items:center;gap:10px;border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:8px 18px;cursor:pointer;font:inherit;line-height:1}
+.swap .fl{font-size:28px}
+.swap .arr{font-size:20px;display:inline-block}
+.swap:active{transform:scale(.97)}
+@media (prefers-reduced-motion:no-preference){.swap.spin .arr{animation:swapSpin .35s ease}}
+@keyframes swapSpin{from{transform:rotate(-180deg)}to{transform:rotate(0)}}
+.chip.flags{background:transparent;padding:0 2px;font-size:15px;letter-spacing:0}
+.lookup{font-size:14px;color:var(--muted)}
+.lookup a{color:var(--blue);font-weight:600}
+.btn{font:inherit;font-weight:700;border:0;border-radius:12px;padding:12px 18px;cursor:pointer;background:var(--blue);color:var(--card)}
+.btn.ghost{background:transparent;color:var(--blue);border:1px solid var(--line)}
+.btn:disabled{opacity:.5}
+.spacer{flex:1}
+
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line);position:sticky;top:env(safe-area-inset-top);background:var(--paper);z-index:2}
+/* Opaque strip behind the iPhone status bar so content scrolls under it cleanly */
+body::before{content:"";position:fixed;left:0;right:0;top:0;height:env(safe-area-inset-top);background:var(--paper);z-index:3}
+.tabs button{font:inherit;font-family:var(--f-display);font-weight:600;font-size:17px;background:none;border:0;border-bottom:3px solid transparent;color:var(--muted);padding:12px 2px;cursor:pointer;margin-bottom:-1px;white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:5px;min-width:0}
+.tabs button[aria-selected=true]{color:var(--ink);border-color:var(--blue)}
+.tabs .emo{font-size:17px}
+.tabs .count{font-family:var(--f-body);font-size:12px;font-weight:700;color:var(--muted);background:var(--blue-soft);border-radius:999px;padding:1px 7px;font-variant-numeric:tabular-nums}
+.tabs button[aria-selected=true] .count{color:var(--blue)}
+.tabs .lbl{display:inline-flex;align-items:center;gap:5px}
+@media (max-width:600px){
+  .tabs button{flex-direction:column;gap:2px;font-size:13px;padding:8px 2px 7px}
+  .tabs .emo{font-size:22px;line-height:1.1}
+  .tabs .lbl{gap:3px}
+  .tabs .count{font-size:11px;padding:0 5px}
+}
+
+.view{display:flex;flex-direction:column;gap:14px}
+.tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.searchWrap{flex:1 1 220px;min-width:0}
+.tools input[type=search]{width:100%;min-width:0;background:var(--card);border-radius:999px;padding:10px 46px 10px 16px}
+.tools input[type=search]::-webkit-search-cancel-button{-webkit-appearance:none;appearance:none;display:none}
+
+ul.list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.kbdHint{display:none;text-align:center;font-size:13px;color:var(--muted)}
+.kbdHint kbd{font:inherit;font-weight:700;border:1px solid var(--line);border-bottom-width:2px;border-radius:6px;padding:0 6px;background:var(--card)}
+/* Computer: wider page, two-column word list, centred form and cards, keyboard hints. */
+@media (min-width:1000px){
+  .wrap{max-width:1080px}
+  #addForm{width:100%;max-width:760px;margin:0 auto}
+  ul.list{display:grid;grid-template-columns:1fr 1fr;align-items:start}
+  #revCards > *{width:100%;max-width:600px;margin-left:auto;margin-right:auto}
+}
+@media (hover:hover) and (pointer:fine){
+  .swiper{cursor:grab}
+  .swiper.dragging{cursor:grabbing}
+  .kbdHint{display:block}
+}
+.entry{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 14px 12px 16px;display:grid;grid-template-columns:1fr auto;gap:6px 10px}
+/* Darija and French flow on one line, same size; a long pair wraps as one sentence. */
+.entry .terms{grid-column:1/-1;min-width:0;margin:0;font-size:18px;line-height:1.4;overflow-wrap:anywhere}
+.entry .en{font-weight:700}
+.entry .arrow{color:var(--muted);margin:0 .35em}
+.entry .fr{font-weight:400}
+.entry .note{grid-column:1/-1;color:var(--muted);font-style:italic;font-size:15px;margin:0;overflow-wrap:anywhere}
+.entry .meta{grid-column:1/-1;display:flex;flex-wrap:nowrap;gap:4px;align-items:center;font-size:13px;color:var(--muted)}
+.chip{font:inherit;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:3px 9px;border-radius:999px;background:var(--blue-soft);color:var(--blue);border:0}
+.chip.todo{background:var(--hl);color:var(--hl-ink)}
+.chip.done{background:var(--ok-soft);color:var(--ok)}
+button.chip{cursor:pointer}
+.icons{display:flex;gap:0;align-items:start}
+.icon{background:none;border:0;color:var(--muted);cursor:pointer;font:inherit;font-size:14px;padding:6px 8px;border-radius:8px}
+.icon.danger{color:var(--danger)}
+.confirm{grid-column:1/-1;display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:14px}
+
+.empty{border:2px dashed var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px;color:var(--muted)}
+.empty strong{color:var(--ink)}
+.empty .entry{opacity:.85}
+
+/* Flashcard: two faces stacked in one grid cell, rotated in 3D */
+.flash{perspective:1200px;user-select:none;-webkit-user-select:none}
+#revCards{overflow-x:clip}
+.swiper{position:relative;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;transition:transform .26s ease-out;will-change:transform}
+.swiper.dragging{transition:none}
+.swiper.leaving{transition:transform .26s ease-in}
+.stamp{position:absolute;top:18px;z-index:5;pointer-events:none;opacity:0;font-family:var(--f-display);font-weight:800;font-size:20px;letter-spacing:.04em;text-transform:uppercase;padding:4px 12px;border:3px solid currentColor;border-radius:10px;background:var(--card)}
+.stamp.ok{right:16px;color:var(--ok);transform:rotate(10deg)}
+.stamp.ko{left:16px;color:#c98a00;transform:rotate(-10deg)}
+:root[data-theme="dark"] .stamp.ko{color:var(--hl)}
+@media (prefers-reduced-motion:reduce){.swiper,.swiper.leaving{transition:none}}
+.card3d{display:grid;transform-style:preserve-3d;-webkit-transform-style:preserve-3d;transition:transform .55s cubic-bezier(.3,.7,.3,1);cursor:pointer}
+.card3d.flipped{transform:rotateY(180deg)}
+.face{grid-area:1/1;position:relative;background:var(--card);border:1px solid var(--line);border-radius:18px;min-height:250px;padding:40px 20px 28px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:12px;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.face.back{transform:rotateY(180deg);background:var(--blue-soft);border-color:transparent}
+.face .flag{position:absolute;top:14px;left:16px;font-size:28px;line-height:1}
+.face .word{font-family:var(--f-display);font-weight:700;font-size:30px;line-height:1.15;overflow-wrap:anywhere}
+.face.back .word{color:var(--blue)}
+.face .note{color:var(--muted);font-style:italic;max-width:50ch}
+.face .side{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){.card3d{transition:none}}
+.progress{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+.backup{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.backup h2{font-family:var(--f-display);font-size:20px;margin:0}
+.backup p{margin:0;color:var(--muted);font-size:15px}
+.stat{font-variant-numeric:tabular-nums;color:var(--ink);font-weight:700}
+
+/* Prof : discussion et cours */
+.chatLog{display:flex;flex-direction:column;gap:12px}
+.msg{max-width:88%;padding:10px 14px;border-radius:18px;overflow-wrap:anywhere;font-size:16px;line-height:1.5}
+.known{background:var(--hl);color:var(--hl-ink);border-radius:14px;padding:10px 14px;display:flex;flex-direction:column;gap:6px;animation:resIn .25s ease}
+.known strong{font-size:15px}
+.known button{font:inherit;font-size:15px;text-align:left;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.55);color:inherit;border:0;border-radius:10px;padding:8px 10px;cursor:pointer;overflow-wrap:anywhere}
+:root[data-theme="dark"] .known button{background:rgba(0,0,0,.15)}
+.known .kt{flex:1;min-width:0}
+.known .kd{font-size:13px;opacity:.8;flex:none}
+@media (prefers-reduced-motion:reduce){.known{animation:none}}
+.askBtn{align-self:flex-start;font:inherit;font-size:14px;font-weight:600;color:var(--blue);background:var(--card);border:1px solid var(--line);border-radius:999px;padding:7px 14px;cursor:pointer}
+.askBox{display:flex;gap:8px;align-items:flex-end}
+.askBox textarea{flex:1;min-height:44px;max-height:30vh;resize:none;border-radius:22px;padding:10px 16px;background:var(--card);line-height:1.4}
+.askBox .btn{flex:none;width:44px;height:44px;border-radius:50%;padding:0;font-size:19px;display:grid;place-items:center}
+.msg .qctx{display:block;font-size:14px;opacity:.85;border-left:3px solid currentColor;padding-left:8px;margin-bottom:6px}
+.msg.user{align-self:flex-end;background:var(--blue);color:var(--card);border-bottom-right-radius:6px;white-space:pre-wrap}
+.msg.bot{align-self:flex-start;background:var(--card);border:1px solid var(--line);border-bottom-left-radius:6px}
+.msg.err{align-self:center;background:transparent;color:var(--danger);font-size:14px;text-align:center}
+.md > :first-child{margin-top:0}.md > :last-child{margin-bottom:0}
+.md p{margin:0 0 8px}.md ul,.md ol{margin:0 0 8px;padding-left:22px}.md li{margin:2px 0}
+.md h4{font-family:var(--f-display);font-size:16px;margin:12px 0 4px;color:var(--blue)}
+.md blockquote{margin:0 0 8px;padding:4px 10px;border-left:3px solid var(--blue);color:var(--muted)}
+.md em{color:var(--ink)}
+.md table{border-collapse:collapse;margin:0 0 8px;font-size:14px;display:block;overflow-x:auto}
+.md td,.md th{border:1px solid var(--line);padding:4px 8px;text-align:left}
+.md code{font-size:.92em;background:var(--blue-soft);border-radius:5px;padding:0 4px}
+.botActs{align-self:flex-start;display:flex;gap:8px;flex-wrap:wrap;margin-top:-4px}
+.typing{display:inline-flex;gap:4px;padding:4px 0}
+.typing i{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:blink 1.2s infinite both}
+.typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.25}40%{opacity:1}}
+.lessonCard{align-self:stretch;background:var(--blue-soft);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.lessonCard h3,.lessonRead h3{margin:0;font-family:var(--f-display);font-size:20px;line-height:1.25;display:flex;gap:8px;align-items:flex-start}
+.lessonCard .btn.saved{background:var(--ok-soft);color:var(--ok)}
+.chatForm{display:flex;gap:8px;align-items:flex-end;position:sticky;bottom:0;background:var(--paper);padding:8px 0 calc(8px + env(safe-area-inset-bottom));z-index:1}
+.chatForm textarea{flex:1;min-height:46px;max-height:40vh;resize:none;border-radius:22px;padding:11px 16px;background:var(--card);line-height:1.4}
+.chatForm .btn{flex:none;width:46px;height:46px;border-radius:50%;padding:0;font-size:20px;display:grid;place-items:center}
+.chatTop{display:flex;justify-content:flex-end}
+.suggest{display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+.suggest button{font:inherit;font-size:15px;text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:14px;padding:10px 14px;cursor:pointer}
+.lessonList{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.lessonList button{width:100%;font:inherit;text-align:left;display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;color:var(--ink);cursor:pointer}
+.lessonList .le{font-size:26px;line-height:1;flex:none}
+.lessonList .lt{flex:1;min-width:0;font-weight:700;font-size:17px;overflow-wrap:anywhere}
+.lessonList .ld{font-size:13px;color:var(--muted);flex:none}
+.lessonRead{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.lessonRead .md{font-size:16px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom));background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:12px;font-size:14px;z-index:5;max-width:calc(100% - 32px)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Kalima <span class="en">Up</span></h1>
+    </div>
+    <button class="themeBtn" id="themeBtn" type="button" aria-label="Changer de mode"></button>
+  </header>
+
+  <p class="notice" id="notice" hidden></p>
+
+  <div class="tabs" role="tablist">
+    <button role="tab" data-tab="list" aria-selected="true"><span class="emo" aria-hidden="true">🌐</span><span class="lbl">Traduire</span></button>
+    <button role="tab" data-tab="review" aria-selected="false"><span class="emo" aria-hidden="true">🧠</span><span class="lbl">Réviser <span class="count" id="countTodo">0</span></span></button>
+    <button role="tab" data-tab="prof" aria-selected="false"><span class="emo" aria-hidden="true">🎓</span><span class="lbl">Prof</span></button>
+    <button role="tab" data-tab="backup" aria-selected="false"><span class="emo" aria-hidden="true">⚙️</span><span class="lbl">Réglages</span></button>
+  </div>
+
+  <!-- CARNET -->
+  <section class="view" id="view-list">
+    <form class="add" id="addForm" autocomplete="off">
+      <button type="button" class="swap" id="swapBtn" aria-label="Inverser le sens de traduction">
+        <span class="fl" id="swapFrom">🇲🇦</span><span class="arr" aria-hidden="true">➡️</span><span class="fl" id="swapTo">🇫🇷</span>
+      </button>
+      <button type="button" class="btn ghost pasteBtn" id="pasteBtn">📋 Coller et traduire</button>
+      <div class="pair">
+        <label for="enInput">Darija <span class="flag">(mot ou expression)</span>
+          <span class="clearable"><input type="text" id="enInput" autocapitalize="off" autocorrect="off" spellcheck="false"><button type="button" class="clearBtn" data-clear aria-label="Tout effacer" hidden>✕</button></span>
+        </label>
+        <label for="frInput">Français
+          <span class="clearable"><input type="text" id="frInput" autocapitalize="off"><button type="button" class="clearBtn" data-clear aria-label="Tout effacer" hidden>✕</button></span>
+        </label>
+      </div>
+      <div class="result" id="result" hidden aria-live="polite">
+        <div class="rmain">
+          <span class="rflag" id="resultFlag"></span><div class="rtext" id="resultText"></div>
+          <div class="acts">
+            <button class="icon" type="button" id="resultSpeak" aria-label="Écouter">🔊</button>
+            <button class="icon retry" type="button" id="resultRetry" aria-label="Relancer la traduction avec le contexte">🔄</button>
+          </div>
+        </div>
+        <div class="ralts" id="resultAlts" hidden></div>
+        <div class="rex" id="resultEx" hidden>
+          <div class="rex-txt"><span class="rex-en" id="resultExEn"></span><span class="rex-fr" id="resultExFr"></span></div>
+          <button class="icon" type="button" id="resultExSpeak" aria-label="Écouter l'exemple">🔊</button>
+        </div>
+        <p class="rtip" id="resultTip" hidden></p>
+        <button type="button" class="askBtn" id="askBtn">❓ Poser une question sur cette traduction</button>
+        <div class="askBox" id="askBox" hidden>
+          <textarea id="askInput" rows="1" placeholder="Ta question" enterkeyhint="send" aria-label="Ta question sur cette traduction" autocapitalize="sentences"></textarea>
+          <button class="btn" type="button" id="askSend" aria-label="Envoyer la question">➤</button>
+        </div>
+      </div>
+      <div class="known" id="knownBox" hidden aria-live="polite"></div>
+      <button type="button" class="switchRow" id="ownSwitch" role="switch" aria-checked="false">
+        <span class="track" aria-hidden="true"></span><span id="ownLabel">✏️ Ma propre traduction</span>
+      </button>
+      <label for="noteInput">Exemple ou contexte <span class="flag">(facultatif)</span>
+        <textarea id="noteInput" rows="1" autocapitalize="sentences"></textarea>
+      </label>
+      <div class="row" id="translateRow">
+        <button class="btn ghost" id="translateBtn" type="button">Traduire</button>
+        <span class="lookup" id="translateHint"></span>
+      </div>
+      <div class="lookup">Vérifier ailleurs : <a id="tqpLink" href="https://tajinequiparle.com/dictionnaire-francais-arabe-marocain/" target="_blank" rel="noopener">Tajine qui parle</a> · <a id="lmLink" href="https://www.learnmoroccan.com/dictionary" target="_blank" rel="noopener">Learn Moroccan</a> · <a id="bingLink" href="https://www.bing.com/translator?from=ary&amp;to=fr" target="_blank" rel="noopener">Bing Trad.</a></div>
+      <div class="folderRow">
+        <label for="folderSel" class="folderLabel">📁 Dossier</label>
+        <select id="folderSel"></select>
+        <span class="folderHint" id="folderHint"></span>
+      </div>
+      <div class="row">
+        <button class="btn ghost" id="cancelEdit" type="button" hidden>Annuler</button>
+        <span class="spacer"></span>
+        <button class="btn" id="saveBtn" type="submit">Ajouter au carnet</button>
+      </div>
+    </form>
+
+  </section>
+
+  <!-- RÉVISER -->
+  <section class="view" id="view-review" hidden>
+    <div class="seg modeSeg" role="group" aria-label="Mode de révision">
+      <button type="button" data-mode="list" aria-pressed="true">📋 Liste <span class="count" id="countAll">0</span></button>
+      <button type="button" data-mode="cards" aria-pressed="false">🃏 Flashcards</button>
+    </div>
+    <div class="folderChips" id="folderChips" role="group" aria-label="Dossiers"></div>
+    <div class="view" id="revList">
+    <div class="tools">
+        <span class="clearable searchWrap"><input type="search" id="search" placeholder="Rechercher" aria-label="Rechercher"><button type="button" class="clearBtn" id="searchClear" aria-label="Effacer la recherche" hidden>✕</button></span>
+        <div class="seg filterSeg" role="group" aria-label="Filtre">
+          <button type="button" data-filter="all" aria-pressed="true">Tout</button>
+          <button type="button" data-filter="todo" aria-pressed="false">À revoir</button>
+          <button type="button" data-filter="done" aria-pressed="false">Acquis</button>
+        </div>
+      </div>
+      <div class="selRow">
+        <button class="btn ghost small" type="button" id="sortBtn">✨ Trier</button>
+        <button class="btn ghost small" type="button" id="undoSortBtn" hidden>↩︎ Annuler le tri</button>
+        <span class="spacer"></span><button class="btn ghost small" type="button" id="selBtn">☑️ Sélectionner</button>
+      </div>
+      <ul class="list" id="list"></ul>
+      <div class="empty" id="empty">
+        <div><strong>Ton carnet est vide.</strong> Traduis un mot dans l'onglet 🌐 Traduire, puis touche « Ajouter au carnet ». Il apparaîtra ici, comme ceci :</div>
+        <div class="entry" aria-hidden="true">
+          <div class="terms"><span class="en">bslama</span><span class="arrow">→</span><span class="fr">au revoir</span></div>
+          <p class="note">Safi, bslama, ntla9aw ghda !</p>
+          <div class="meta"><span class="chip">Exemple</span><span class="chip todo">À revoir</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="view" id="revCards" hidden>
+    <div class="seg fullSeg" role="group" aria-label="Sens des cartes">
+      <button type="button" data-dir="en" aria-pressed="true">Darija → Français</button>
+      <button type="button" data-dir="fr" aria-pressed="false">Français → Darija</button>
+    </div>
+    <div class="row">
+      <label for="incDone" style="flex-direction:row;align-items:center;text-transform:none;letter-spacing:0;font-weight:400;font-size:14px;gap:6px"><input type="checkbox" id="incDone"> Inclure les acquis</label>
+    </div>
+    <div class="flash" id="flash"></div>
+    <div class="row" id="flashBtns"></div>
+    <div class="progress" id="progress"></div>
+    <p class="kbdHint"><kbd>←</kbd> à revoir · <kbd>Espace</kbd> retourner · <kbd>→</kbd> je savais</p>
+    </div>
+  </section>
+
+  <!-- PROF -->
+  <section class="view" id="view-prof" hidden>
+    <div class="seg modeSeg" role="group" aria-label="Prof">
+      <button type="button" data-pmode="chat" aria-pressed="true">💬 Discussion</button>
+      <button type="button" data-pmode="lessons" aria-pressed="false">📚 Mes cours <span class="count" id="countLessons">0</span></button>
+    </div>
+    <div class="view" id="profChat">
+      <div class="chatTop" id="chatTop" hidden><button type="button" class="btn ghost small" id="newChatBtn">🗑 Nouvelle discussion</button></div>
+      <div class="suggest" id="chatSuggest">
+        <button type="button">Comment conjuguer un verbe au passé en darija ?</button>
+        <button type="button">Quelle différence entre <i>bghit</i> et <i>khassni</i> ?</button>
+        <button type="button">Quand dire <i>kayn</i>, <i>kayna</i> ou <i>kaynin</i> ?</button>
+      </div>
+      <div class="chatLog" id="chatLog" aria-live="polite"></div>
+      <form class="chatForm" id="chatForm" autocomplete="off">
+        <textarea id="chatInput" rows="1" placeholder="Pose ta question…" enterkeyhint="send" aria-label="Ta question"></textarea>
+        <button class="btn" type="submit" id="chatSend" aria-label="Envoyer">➤</button>
+      </form>
+    </div>
+    <div class="view" id="profLessons" hidden>
+      <ul class="lessonList" id="lessonList"></ul>
+      <div class="lessonRead" id="lessonRead" hidden></div>
+    </div>
+  </section>
+
+  <!-- SAUVEGARDE -->
+  <section class="view" id="view-backup" hidden>
+    <div class="backup">
+      <h2>Apparence</h2>
+      <div class="seg fullSeg" role="group" aria-label="Apparence">
+        <button type="button" data-theme-opt="light" aria-pressed="false">☀️ Jour</button>
+        <button type="button" data-theme-opt="dark" aria-pressed="false">🌙 Nuit</button>
+        <button type="button" data-theme-opt="auto" aria-pressed="false">📱 Auto</button>
+      </div>
+    </div>
+    <form class="backup" id="settingsForm" autocomplete="off">
+      <h2>Traduction automatique</h2>
+      <p>Renseigne l'adresse de ton relais Cloudflare et le mot de passe que tu as choisi (APP_PASSWORD).</p>
+      <label for="setUrl">Adresse du relais
+        <input type="text" id="setUrl" inputmode="url" autocapitalize="off" spellcheck="false" placeholder="https://kalima-relais.tonpseudo.workers.dev">
+      </label>
+      <label for="setPw">Mot de passe
+        <input type="text" id="setPw" autocapitalize="off" spellcheck="false" placeholder="le même que dans Cloudflare">
+      </label>
+      <p style="font-size:14px">Claude traduit en darija (en lettres latines, comme sur WhatsApp) et ajoute un exemple et une note d'usage.</p>
+      <label for="voiceSel">Voix pour la prononciation 🔊
+        <select id="voiceSel"></select>
+      </label>
+      <div class="row"><button class="btn ghost small" id="voiceTest" type="button">🔊 Essayer la voix</button><span class="lookup" id="voiceInfo"></span></div>
+      <p style="font-size:14px">Une voix arabe de l'appareil lit le darija : l'écriture arabe reste en coulisse, à l'écran tout est en lettres latines.</p>
+      <div class="row">
+        <span class="lookup" id="testResult"></span>
+        <span class="spacer"></span>
+        <button class="btn ghost" id="testBtn" type="button">Tester</button>
+        <button class="btn" type="submit">Enregistrer</button>
+      </div>
+    </form>
+    <div class="backup">
+      <h2>📁 Dossiers</h2>
+      <ul class="folderMgr" id="folderMgr"></ul>
+      <div class="row"><button class="btn ghost" id="newFolderBtn" type="button">＋ Nouveau dossier</button></div>
+    </div>
+    <div class="backup">
+      <h2>🔄 Synchronisation</h2>
+      <p>Tes mots sont partagés entre tous tes appareils reliés au même relais (iPhone, PC…), et sauvegardés en ligne.</p>
+      <p>État : <span class="stat" id="syncStatus">—</span></p>
+      <div class="row"><button class="btn ghost" id="syncBtn" type="button">Synchroniser maintenant</button></div>
+    </div>
+    <div class="backup">
+      <h2>Exporter</h2>
+      <p>Une copie de secours dans un fichier, à garder dans Fichiers, iCloud Drive ou sur ton PC.</p>
+      <p>Dernière sauvegarde : <span class="stat" id="lastBackup">jamais</span></p>
+      <div class="row"><button class="btn" id="exportBtn" type="button">Exporter le carnet</button></div>
+    </div>
+    <div class="backup">
+      <h2>Importer</h2>
+      <p>Choisis un fichier de sauvegarde. Les mots déjà présents ne sont pas dupliqués.</p>
+      <div class="row">
+        <input type="file" id="importFile" accept=".json,application/json" hidden>
+        <button class="btn ghost" id="importBtn" type="button">Choisir un fichier…</button>
+      </div>
+    </div>
+  </section>
+</div>
+<div class="toast" id="toast" hidden></div>
+<div class="selBar" id="selBar" hidden>
+  <span id="selCount">0 sélectionné</span><span class="spacer"></span>
+  <button class="btn ghost" type="button" id="selCancel">Annuler</button>
+  <button class="btn" type="button" id="selMove">📁 Ranger</button>
+</div>
+<div class="sheet sortSheet" id="sortSheet" hidden role="dialog" aria-labelledby="sortTitle">
+  <div class="sheetHead"><span id="sortTitle">✨ Tri automatique</span><button class="icon" type="button" id="sortClose" aria-label="Fermer">✕</button></div>
+  <div id="sortSetup" class="sortBody">
+    <p class="sortIntro">Claude range tes mots dans tes dossiers et peut en créer de nouveaux. Tu vois le résultat avant que rien ne change.</p>
+    <label for="sortHint">Consignes (facultatif)
+      <input type="text" id="sortHint" maxlength="300" autocapitalize="sentences" placeholder="ex. crée un dossier Conjugaison pour les verbes">
+    </label>
+    <label class="sortCheck" for="sortAll"><input type="checkbox" id="sortAll" checked> Retrier aussi les mots déjà rangés</label>
+    <div class="row"><span class="lookup" id="sortStatus"></span><span class="spacer"></span><button class="btn" type="button" id="sortRun">Lancer le tri</button></div>
+  </div>
+  <div id="sortResult" class="sortBody" hidden>
+    <p class="sortIntro" id="sortSummary"></p>
+    <div class="sortPreview" id="sortPreview"></div>
+    <div class="row"><span class="spacer"></span><button class="btn ghost" type="button" id="sortBack">Annuler</button><button class="btn" type="button" id="sortApply">Appliquer</button></div>
+  </div>
+</div>
+<div class="sheet" id="moveSheet" hidden role="dialog" aria-labelledby="moveTitle">
+  <div class="sheetHead"><span id="moveTitle">Ranger dans…</span><button class="icon" type="button" id="moveClose" aria-label="Fermer">✕</button></div>
+  <div class="tiles" id="moveTiles"></div>
+</div>
+<dialog id="folderDlg" aria-labelledby="folderDlgTitle">
+  <form id="folderForm" method="dialog">
+    <h2 id="folderDlgTitle">Nouveau dossier</h2>
+    <label for="folderName">Nom
+      <input type="text" id="folderName" maxlength="40" autocapitalize="sentences" placeholder="Travail, Voyage, Séries…">
+    </label>
+    <div class="emojiPick" id="emojiPick" role="group" aria-label="Emoji"></div>
+    <div class="row">
+      <span class="spacer"></span>
+      <button class="btn ghost" type="button" id="folderCancel">Annuler</button>
+      <button class="btn" type="submit" id="folderOk">Créer</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const KEY = "kalima-up-v1", BKEY = "kalima-up-lastbackup";
+// Le darija s'affiche uniquement en lettres latines : toute écriture arabe venue de Claude est retirée de l'écran.
+const AR_RE = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]+/g;
+const noAr = s => String(s ?? "").replace(AR_RE,"").replace(/\(\s*\)|«\s*»|"\s*"/g,"").replace(/[ \t]{2,}/g," ").replace(/ +([,.])/g,"$1").trim();
+
+// ---------- Storage (local copy, kept in sync with the relay when set up) ----------
+const DKEY = "kalima-up-deleted";   // {id: deletedAt} so deletions reach other devices
+function load(){ try{ return JSON.parse(localStorage.getItem(KEY)) || []; }catch(e){ return []; } }
+// Champs : « en » et « exEn » = le DARIJA (noms gardés de Word Up), « ar » et « exAr » = son écriture arabe,
+// gardée en coulisse pour la voix 🔊 et jamais affichée.
+const sigOf = e => JSON.stringify([e.en,e.fr,e.note||"",e.origin,e.status,e.exEn||"",e.exFr||"",e.tip||"",e.folder||"",e.ar||"",e.exAr||""]);
+let entries = load(), deleted = {}, lastSig = {};
+try{ deleted = JSON.parse(localStorage.getItem(DKEY)) || {}; }catch(e){}
+for(const e of entries){ if(!e.updatedAt) e.updatedAt = e.createdAt || Date.now(); lastSig[e.id] = sigOf(e); }
+function persist(){
+  try{ localStorage.setItem(KEY, JSON.stringify(entries)); localStorage.setItem(DKEY, JSON.stringify(deleted)); return true; }
+  catch(e){ toast("Impossible d'enregistrer : la mémoire du navigateur est pleine ou bloquée."); return false; }
+}
+// Every change goes through save(): it time-stamps what changed and records deletions,
+// then schedules a sync. Call sites don't need to know about syncing.
+function save(){
+  const now = Date.now(), seen = new Set();
+  for(const e of entries){
+    seen.add(e.id); const sig = sigOf(e);
+    if(lastSig[e.id] !== sig){ e.updatedAt = now; lastSig[e.id] = sig; }
+    delete deleted[e.id];
+  }
+  for(const id of Object.keys(lastSig)) if(!seen.has(id)){ deleted[id] = now; delete lastSig[id]; }
+  const ok = persist();
+  if(typeof scheduleSync==="function") scheduleSync();
+  return ok;
+}
+// ---------- Folders ({id, name, emoji, updatedAt}; deleted ones stay as {id, deleted:true, updatedAt}) ----------
+const FOLDERS_KEY="kalima-up-folders";
+let folders=[]; try{ folders=JSON.parse(localStorage.getItem(FOLDERS_KEY))||[]; }catch(e){}
+const liveFolders = () => folders.filter(f=>!f.deleted).sort((a,b)=>a.name.localeCompare(b.name,"fr"));
+const folderById = id => id ? folders.find(f=>f.id===id && !f.deleted) : null;
+const folderLabel = f => (f.emoji ? f.emoji+" " : "")+f.name;
+function persistFolders(){ try{ localStorage.setItem(FOLDERS_KEY, JSON.stringify(folders)); }catch(e){} }
+function addFolder(name, emoji){
+  const f={id:uid(), name, emoji, updatedAt:Date.now()};
+  folders.push(f); persistFolders(); if(typeof scheduleSync==="function") scheduleSync(); return f;
+}
+function updateFolder(id, patch){
+  const f=folders.find(x=>x.id===id); if(!f) return;
+  Object.assign(f, patch, {updatedAt:Date.now()}); persistFolders(); scheduleSync();
+}
+// Deleting a folder never deletes words: they move to "Sans dossier".
+function deleteFolder(id){
+  const i=folders.findIndex(x=>x.id===id); if(i<0) return;
+  folders[i]={id, deleted:true, updatedAt:Date.now()}; persistFolders();
+  for(const e of entries) if(e.folder===id) e.folder="";
+  save();
+}
+try{ navigator.storage && navigator.storage.persist && navigator.storage.persist(); }catch(e){}
+
+const isStandalone = window.navigator.standalone === true || matchMedia("(display-mode: standalone)").matches;
+if(!isStandalone && /iPhone|iPad/.test(navigator.userAgent)){
+  notice("Pour l'installer : touche Partager puis « Sur l'écran d'accueil ». Ajoute ensuite tes mots depuis l'icône, pas depuis Safari.");
+}
+
+let origin="en", filter="all", editingId=null, confirmId=null;
+let dir="en", deck=[], pos=0, revealed=false;
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+
+function toast(msg){ const t=$("#toast"); t.textContent=msg; t.hidden=false; clearTimeout(toast.t); toast.t=setTimeout(()=>t.hidden=true,2400); }
+function notice(msg){ const n=$("#notice"); n.textContent=msg; n.hidden=!msg; }
+
+// ---------- Lookup links ----------
+function updateLinks(){
+  const en=$("#enInput").value.trim(), fr=$("#frInput").value.trim();
+  const q = origin==="fr" ? (fr||en) : (en||fr), enc=encodeURIComponent(q);
+  $("#tqpLink").href = q ? "https://tajinequiparle.com/?s="+enc : "https://tajinequiparle.com/dictionnaire-francais-arabe-marocain/";
+  $("#lmLink").href = "https://www.learnmoroccan.com/dictionary";
+  $("#bingLink").href = "https://www.bing.com/translator?"+(origin==="fr" ? "from=fr&to=ary" : "from=ary&to=fr")+(q?"&text="+enc:"");
+}
+function renderSwap(){
+  const en = "🇲🇦";
+  $("#swapFrom").textContent = origin==="fr" ? "🇫🇷" : en;
+  $("#swapTo").textContent = origin==="fr" ? en : "🇫🇷";
+  $("#swapBtn").setAttribute("aria-label", origin==="fr" ? "Français vers darija. Toucher pour inverser." : "Darija vers français. Toucher pour inverser.");
+}
+function setOrigin(o){
+  origin=o;
+  try{ localStorage.setItem("kalima-up-origin",o); }catch(e){}
+  renderSwap();
+  const pair=$(".pair"); pair.prepend(o==="fr" ? $("#frInput").closest("label") : $("#enInput").closest("label"));
+  updateLinks();
+  if(typeof updateTranslateUI==="function") updateTranslateUI();
+}
+// Guess whether a pasted text is French or Darija (simple word/accent scoring; ties → Darija).
+function guessLang(text){
+  const t=" "+text.toLowerCase().replace(/[’']/g,"' ")+" ";
+  let fr=(t.match(/[àâçéèêëîïôûùüÿœæ]/g)||[]).length*2, en=0;
+  // Chiffres collés aux lettres (3afak, l7m, 9alb, su2al) : signe très sûr de darija.
+  en+=(t.match(/[a-z][2379]|[2379][a-z]/g)||[]).length*3;
+  if(/[\u0600-\u06FF]/.test(t)) en+=6;
+  en+=(t.match(/kh|gh/g)||[]).length;
+  fr+=(t.match(/(tion|ment|eux|eur|oir|ais|ait|ez)(?=[^a-z]|$)/g)||[]).length + (t.match(/qu|eau|oi|eu|au/g)||[]).length;
+  const FR=["le","la","les","de","des","du","un","une","et","est","je","tu","il","elle","nous","vous","ils","pas","que","qui","pour","avec","dans","sur","ce","cette","mon","ma","mes","ton","ta","son","sa","c'","j'","l'","d'","qu'","n'","au","aux","ou","mais","très","bien","être","avoir","fait","comme","plus"];
+  const EN=["ana","nta","nti","howa","huwa","hiya","7na","ntoma","homa","wach","chno","chnou","ach","kifach","kifash","fin","mnin","3lach","bghit","bgha","khassni","kan","kont","machi","walo","bzaf","bezzaf","chwiya","mzyan","mzian","wakha","safi","daba","ghadi","dyal","dial","dyali","had","hadi","hadak","hadchi","kayn","kayna","makaynch","3andi","rah","raha","rani","salam","labas","bslama","chokran","choukran","3afak","yallah","m3a","3la","mn","ila","bach","hna","lyoma","ghda","iyeh","ewa","chi","bla","khoya","khti","bzzaf"];
+  for(const w of t.split(/[^a-z0-9àâçéèêëîïôûùüÿœæ']+/).filter(Boolean)){
+    if(FR.includes(w)) fr+=2; if(EN.includes(w)) en+=2;
+  }
+  return fr>en ? "fr" : "en";
+}
+// Put a pasted/copied text in the right field (language guessed) and translate it straight away.
+function pasteAndTranslate(raw){
+  let text=(raw||"").replace(/\s+/g," ").trim();
+  if(!text){ toast("Le presse-papiers est vide. Copie d'abord un mot ou une phrase."); return; }
+  if(text.length>1000) text=text.slice(0,1000);
+  if(editingId) resetForm();
+  setOrigin(guessLang(text));
+  $("#frInput").value=""; $("#enInput").value=""; $("#noteInput").value=""; pending=null;
+  srcInput().value=text; updateLinks(); showResult();
+  if(canTranslate()){
+    const f=$("#addForm");
+    if(f.requestSubmit) f.requestSubmit(); else f.dispatchEvent(new Event("submit",{cancelable:true}));
+  }
+}
+$("#pasteBtn").addEventListener("click",async()=>{
+  let text="";
+  try{ text = await navigator.clipboard.readText(); }
+  catch(e){ toast("Impossible de lire le presse-papiers : fais un appui long dans le champ, puis Coller."); srcInput().focus(); return; }
+  pasteAndTranslate(text);
+});
+// Pasting into an empty field (long press → Coller) translates right away, with no extra prompt.
+["#enInput","#frInput"].forEach(sel=>$(sel).addEventListener("paste",ev=>{
+  const field=$(sel);
+  if(field.value.trim() || editingId || !autoMode()) return; // keep normal pasting when typing or editing
+  const text=(ev.clipboardData||window.clipboardData)?.getData("text") || "";
+  if(!text.trim()) return;
+  ev.preventDefault();
+  pasteAndTranslate(text);
+}));
+
+$("#swapBtn").addEventListener("click",()=>{
+  const btn=$("#swapBtn"); btn.classList.remove("spin"); void btn.offsetWidth; btn.classList.add("spin");
+  // In automatic mode, carry the typed text over to the new source field
+  // (handy when a pasted word was detected in the wrong language).
+  const oldSrc=srcInput(), text=oldSrc.value;
+  setOrigin(origin==="fr"?"en":"fr");
+  if(autoMode() && text.trim() && !srcInput().value.trim()){ srcInput().value=text; oldSrc.value=""; updateLinks(); showResult(); }
+});
+["#enInput","#frInput"].forEach(s=>$(s).addEventListener("input",updateLinks));
+
+// ---------- Theme (day / night) ----------
+const TKEY="kalima-up-theme";
+let themePref="auto"; try{ themePref=localStorage.getItem(TKEY)||"auto"; }catch(e){}
+const sysDark = matchMedia("(prefers-color-scheme: dark)");
+function applyTheme(){
+  const dark = themePref==="dark" || (themePref==="auto" && sysDark.matches);
+  document.documentElement.setAttribute("data-theme", dark?"dark":"light");
+  $("#themeColor").setAttribute("content", dark?"#11152a":"#f5f7fb");
+  const btn=$("#themeBtn");
+  btn.textContent = dark ? "☀️" : "🌙";
+  btn.setAttribute("aria-label", dark ? "Passer en mode jour" : "Passer en mode nuit");
+  document.querySelectorAll("[data-theme-opt]").forEach(b=>b.setAttribute("aria-pressed", b.dataset.themeOpt===themePref));
+}
+function setTheme(t){ themePref=t; try{ localStorage.setItem(TKEY,t); }catch(e){} applyTheme(); }
+$("#themeBtn").addEventListener("click",()=>setTheme(document.documentElement.getAttribute("data-theme")==="dark"?"light":"dark"));
+document.querySelectorAll("[data-theme-opt]").forEach(b=>b.addEventListener("click",()=>setTheme(b.dataset.themeOpt)));
+sysDark.addEventListener?.("change",()=>{ if(themePref==="auto") applyTheme(); });
+applyTheme();
+
+// ---------- Settings ----------
+const SKEY="kalima-up-settings";
+let settings={url:"",pw:"",voice:""};
+try{ Object.assign(settings, JSON.parse(localStorage.getItem(SKEY))||{}); }catch(e){}
+function saveSettings(){ try{ localStorage.setItem(SKEY,JSON.stringify(settings)); return true; }catch(e){ toast("Impossible d'enregistrer les réglages."); return false; } }
+const canTranslate = () => !!(settings.url && settings.pw);
+function fillSettings(){
+  $("#setUrl").value=settings.url; $("#setPw").value=settings.pw;
+  fillVoiceSel(settings.voice||"");
+}
+function readSettingsForm(){
+  let url=$("#setUrl").value.trim().replace(/\/+$/,"");
+  if(url && !/^https?:\/\//i.test(url)) url="https://"+url;
+  return {url, pw:$("#setPw").value.trim(), voice:$("#voiceSel").value||""};
+}
+$("#settingsForm").addEventListener("submit",ev=>{
+  ev.preventDefault(); settings=readSettingsForm();
+  if(saveSettings()){ pickVoice(); updateTranslateUI(); renderSwap(); render(); toast("Réglages enregistrés"); syncNow(); }
+});
+$("#testBtn").addEventListener("click",async()=>{
+  const s=readSettingsForm(), out=$("#testResult");
+  if(!s.url||!s.pw){ out.textContent="Remplis l'adresse et le mot de passe."; return; }
+  out.textContent="Test en cours…";
+  try{
+    const r = await callRelay(s,{ping:true});
+    if(r.app!=="kalima-up"){ out.textContent="✗ Ce relais n'est pas celui de Kalima Up (c'est peut-être celui de Word Up) : vérifie l'adresse."; return; }
+    const eng = r.claude ? "Claude" : "clé Claude manquante (ANTHROPIC_KEY)";
+    out.textContent = "✓ Connexion réussie · " + eng + " · " + (r.sync ? "synchro active" : "synchro pas encore activée");
+  }
+  catch(err){ out.textContent="✗ "+err.message; }
+});
+
+// ---------- Sync (via the same Cloudflare relay) ----------
+// Each device keeps a full local copy and works offline. A sync sends everything
+// (including deletion markers); the relay merges "most recent change wins" per word
+// and returns the merged list, which is merged again locally in case you edited meanwhile.
+const SYNCKEY="kalima-up-lastsync";
+let syncing=false, syncAgain=false, syncTimer=null, syncOff="", relayOkFor="";
+function setSyncStatus(t){ const el=$("#syncStatus"); if(el) el.textContent=t; }
+function syncStatusIdle(){
+  if(!canTranslate()) return setSyncStatus("relais non configuré (voir ci-dessus)");
+  if(syncOff) return setSyncStatus(syncOff);
+  let t=null; try{ t=+localStorage.getItem(SYNCKEY); }catch(e){}
+  setSyncStatus(t ? "à jour ("+new Date(t).toLocaleString("fr-FR",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})+")" : "jamais synchronisé");
+}
+function scheduleSync(delay=1500){
+  if(!canTranslate()) return;
+  clearTimeout(syncTimer); syncTimer=setTimeout(()=>syncNow(), delay);
+}
+function mergeLists(a,b){
+  const m=new Map();
+  for(const e of [...a,...b]){ const c=m.get(e.id); if(!c || (+e.updatedAt||0) > (+c.updatedAt||0)) m.set(e.id,e); }
+  return [...m.values()];
+}
+function localSnapshot(){
+  return [...entries.map(e=>({...e})), ...Object.entries(deleted).map(([id,t])=>({id,deleted:true,updatedAt:t}))];
+}
+function applyRemoteFolders(remoteF){
+  const merged = mergeLists(folders.map(f=>({...f})), remoteF);
+  const remoteAt = new Map(remoteF.map(f=>[f.id,+f.updatedAt||0]));
+  const changed = JSON.stringify(merged.map(f=>[f.id,f.updatedAt]).sort()) !== JSON.stringify(folders.map(f=>[f.id,f.updatedAt]).sort());
+  folders = merged; persistFolders();
+  if(merged.some(f=>remoteAt.get(f.id)!==(+f.updatedAt||0))) syncAgain=true;
+  return changed;
+}
+function applyRemote(remote){
+  const merged = mergeLists(localSnapshot(), remote);
+  const remoteAt = new Map(remote.map(e=>[e.id,+e.updatedAt||0]));
+  const ne=[], nd={};
+  for(const e of merged){ if(e.deleted) nd[e.id]=+e.updatedAt||0; else ne.push(e); }
+  const changed = JSON.stringify(ne.map(e=>[e.id,e.updatedAt]).sort()) !== JSON.stringify(entries.map(e=>[e.id,e.updatedAt]).sort());
+  entries=ne; deleted=nd; lastSig={}; for(const e of entries) lastSig[e.id]=sigOf(e);
+  persist();
+  if(changed){ render(); if(!$("#revCards").hidden && pos>=deck.length) renderCard(); }
+  // Something local is newer than what the relay has (edited during the sync): push again.
+  if(merged.some(e=>remoteAt.get(e.id)!==(+e.updatedAt||0))) syncAgain=true;
+}
+async function syncNow(manual){
+  if(!canTranslate()){ syncStatusIdle(); if(manual) toast("Configure d'abord le relais dans les Réglages."); return; }
+  if(syncing){ syncAgain=true; return; }
+  clearTimeout(syncTimer);
+  syncing=true; setSyncStatus("synchronisation…"); $("#syncBtn") && ($("#syncBtn").disabled=true);
+  try{
+    // Vérifie une fois par adresse que c'est bien le relais de Kalima Up, avant d'y envoyer le moindre mot.
+    if(relayOkFor!==settings.url+"|"+settings.pw){
+      const p = await callRelay(settings,{ping:true});
+      if(p.app!=="kalima-up") throw new Error("Ce relais n'est pas celui de Kalima Up (c'est peut-être celui de Word Up) : vérifie l'adresse dans les Réglages.");
+      relayOkFor=settings.url+"|"+settings.pw;
+    }
+    const data = await callRelay(settings,{sync:true, entries:localSnapshot(), folders:folders.map(f=>({...f})), lessons:lessons.map(l=>({...l}))});
+    syncOff="";
+    // An older relay doesn't know about folders: keep them local until it's updated.
+    const fChanged = Array.isArray(data.folders) ? applyRemoteFolders(data.folders) : false;
+    if(Array.isArray(data.lessons)) applyRemoteLessons(data.lessons);
+    applyRemote(Array.isArray(data.entries)?data.entries:[]);
+    if(fChanged) render();
+    try{ localStorage.setItem(SYNCKEY,String(Date.now())); }catch(e){}
+    syncStatusIdle();
+    if(manual) toast("Synchronisé");
+  }catch(err){
+    syncOff = /WORDS/.test(err.message) ? "pas encore activée (liaison WORDS manquante dans Cloudflare)"
+            : /Rien à traduire/.test(err.message) ? "pas encore activée (le code du relais est à mettre à jour)" : "";
+    setSyncStatus(syncOff || ("échec : "+err.message));
+    if(manual) toast(err.message);
+  }finally{
+    syncing=false; $("#syncBtn") && ($("#syncBtn").disabled=false);
+    if(syncAgain){ syncAgain=false; scheduleSync(400); }
+  }
+}
+$("#syncBtn").addEventListener("click",()=>syncNow(true));
+window.addEventListener("online",()=>scheduleSync(300));
+document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible") scheduleSync(300); });
+
+// ---------- Translation (via your Cloudflare relay → Claude) ----------
+async function callRelay(s, body, timeout=15000){
+  if(!navigator.onLine) throw new Error("Pas de connexion internet.");
+  const ctrl=new AbortController(), timer=setTimeout(()=>ctrl.abort(),timeout);
+  let res;
+  try{
+    res=await fetch(s.url,{method:"POST",headers:{"Content-Type":"application/json","X-App-Password":s.pw},body:JSON.stringify(body),signal:ctrl.signal});
+  }catch(e){ throw new Error(e.name==="AbortError"?"Le relais met trop de temps à répondre.":"Relais injoignable : vérifie l'adresse."); }
+  finally{ clearTimeout(timer); }
+  let data={}; try{ data=await res.json(); }catch(e){}
+  if(!res.ok) throw new Error(data.message||`Erreur ${res.status}`);
+  return data;
+}
+let ownMode=false; try{ ownMode=localStorage.getItem("kalima-up-own")==="1"; }catch(e){}
+// Auto mode hides the target-language field: tapping Add translates with Claude and saves.
+const autoMode = () => canTranslate() && !ownMode && !editingId;
+function updateTranslateUI(){
+  const fromFr = origin==="fr", auto = autoMode();
+  const targetLabel = (fromFr ? $("#enInput") : $("#frInput")).closest("label");
+  const sourceLabel = (fromFr ? $("#frInput") : $("#enInput")).closest("label");
+  sourceLabel.hidden = false; targetLabel.hidden = auto;
+  $(".pair").classList.toggle("single", auto);
+  $("#ownSwitch").hidden = !canTranslate() || !!editingId;
+  $("#ownSwitch").setAttribute("aria-checked", String(ownMode));
+  $("#ownLabel").textContent = fromFr ? "✏️ Ma propre traduction" : "✏️ Ma propre traduction";
+  $("#translateRow").hidden = auto;
+  $("#translateBtn").hidden = !canTranslate();
+  $("#translateBtn").textContent = fromFr ? "Traduire en darija" : "Traduire en français";
+  $("#translateHint").textContent = canTranslate() ? "" : "Traduction automatique : à configurer dans Réglages";
+  if(typeof showResult==="function") showResult();
+}
+$("#ownSwitch").addEventListener("click",()=>{
+  ownMode=!ownMode; try{ localStorage.setItem("kalima-up-own", ownMode?"1":"0"); }catch(e){}
+  // Carry a translation already on screen into the editable field.
+  if(ownMode && pendingValid()){ (origin==="fr" ? $("#enInput") : $("#frInput")).value = pending.text; }
+  updateTranslateUI();
+  if(ownMode) (origin==="fr" ? $("#enInput") : $("#frInput")).focus();
+});
+async function fetchTranslation(){
+  const fromFr = origin==="fr";
+  const text = (fromFr ? $("#frInput") : $("#enInput")).value.trim();
+  const r=await callRelay(settings,{
+    text, source: fromFr?"FR":"DARIJA", target: fromFr?"DARIJA":"FR",
+    context: $("#noteInput").value.trim(),
+    folders: liveFolders().map(f=>f.name)
+  });
+  if(!r.translation || !noAr(r.translation)) throw new Error("Aucune traduction reçue.");
+  if(r.folder) suggestFolder(r.folder);
+  // ar = écriture arabe du darija (la traduction si on traduit vers le darija, sinon le texte tapé) ; jamais affichée.
+  return { text:noAr(r.translation), alts:(r.alternatives||[]).map(noAr), altsAr:r.alternativesAr||[], ar:r.ar||"",
+           exEn:noAr(r.example||""), exAr:r.exampleAr||"", exFr:noAr(r.exampleFr||""), tip:noAr(r.note||""), engine:"claude" };
+}
+// Extras (example, note) of the last translation, kept so they can be saved with the word.
+let lastExtras=null; // {origin, src, text, exEn, exFr, tip, ar, exAr}
+async function translateNow(){
+  if(!canTranslate()){ toast("Configure la traduction dans l'onglet Réglages."); return false; }
+  const fromFr = origin==="fr";
+  const src = fromFr ? $("#frInput") : $("#enInput"), dst = fromFr ? $("#enInput") : $("#frInput");
+  const text = src.value.trim();
+  if(!text){ toast(fromFr?"Écris d'abord la phrase en français.":"Écris d'abord le mot en darija."); src.focus(); return false; }
+  const btn=$("#translateBtn"); btn.disabled=true; btn.textContent="Traduction…";
+  try{
+    const r=await fetchTranslation(); dst.value=r.text; updateLinks();
+    lastExtras={origin, src:text, text:r.text, exEn:r.exEn, exFr:r.exFr, tip:r.tip, ar:r.ar, exAr:r.exAr};
+    return true;
+  }catch(err){ toast(err.message); return false; }
+  finally{ btn.disabled=false; updateTranslateUI(); }
+}
+$("#translateBtn").addEventListener("click",translateNow);
+
+// ---------- Pronunciation ----------
+// Aucune voix ne sait lire le darija en lettres latines : on fait lire à une voix arabe de l'appareil
+// l'écriture arabe du mot (donnée par Claude, gardée en coulisse, jamais affichée).
+let arVoice=null, voicesSeen=false;
+const NO_AR_VOICE="Aucune voix arabe sur cet appareil. Sur iPhone : Réglages → Accessibilité → Contenu énoncé → Voix → Arabe.";
+function arabicVoices(){ try{ return speechSynthesis.getVoices().filter(v=>/^ar([-_]|$)/i.test(v.lang)); }catch(e){ return []; } }
+function bestVoice(uri){
+  const ar=arabicVoices(), lang=v=>v.lang.replace("_","-").toLowerCase();
+  return (uri && ar.find(v=>v.voiceURI===uri)) || ar.find(v=>lang(v)==="ar-ma") || ar.find(v=>lang(v)==="ar-001")
+    || ar.find(v=>lang(v)==="ar-sa") || ar[0] || null;
+}
+function fillVoiceSel(val){
+  const sel=$("#voiceSel"), info=$("#voiceInfo"); if(!sel) return;
+  const keep = val!==undefined ? val : sel.value, ar=arabicVoices();
+  sel.innerHTML = `<option value="">Automatique (meilleure voix arabe)</option>` +
+    ar.map(v=>`<option value="${esc(v.voiceURI)}">${esc(v.name)} (${esc(v.lang)})</option>`).join("");
+  sel.value = ar.some(v=>v.voiceURI===keep) ? keep : "";
+  info.textContent = !("speechSynthesis" in window) ? "Lecture audio non disponible sur ce navigateur."
+    : !voicesSeen ? "" : ar.length ? `${ar.length} voix arabe${ar.length>1?"s":""} sur cet appareil` : NO_AR_VOICE;
+}
+function pickVoice(){
+  try{ if(speechSynthesis.getVoices().length) voicesSeen=true; arVoice=bestVoice(settings.voice); }catch(e){}
+  fillVoiceSel();
+}
+if("speechSynthesis" in window){ pickVoice(); speechSynthesis.onvoiceschanged=pickVoice; }
+function speakAr(ar, voice){
+  if(!("speechSynthesis" in window)) return toast("La lecture audio n'est pas disponible.");
+  if(!ar) return;
+  try{ if(speechSynthesis.getVoices().length) voicesSeen=true; }catch(e){}
+  const v = voice!==undefined ? voice : (arVoice=bestVoice(settings.voice));
+  if(voicesSeen && !v) return toast(NO_AR_VOICE);
+  speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(ar);
+  u.lang = v ? v.lang : "ar-SA"; if(v) u.voice=v; u.rate=.85;
+  speechSynthesis.speak(u);
+}
+// Mot sans écriture arabe (écrit à la main, importé, modifié) : on la demande une fois à Claude, puis on la garde.
+async function speakDarija(text, ar, keep){
+  text=String(text||"").trim(); if(!text) return;
+  if(ar) return speakAr(ar);
+  if(!("speechSynthesis" in window)) return toast("La lecture audio n'est pas disponible.");
+  if(!canTranslate()) return toast("Configure d'abord le relais dans les Réglages pour la lecture 🔊.");
+  // iPhone : la voix doit démarrer pendant le toucher, on la « réveille » avant d'attendre Claude.
+  try{ speechSynthesis.cancel(); speechSynthesis.speak(new SpeechSynthesisUtterance(" ")); }catch(e){}
+  try{
+    const r = await callRelay(settings,{script:true, texts:[text]});
+    const a = (Array.isArray(r.ar) && r.ar[0]) || "";
+    if(!a) throw new Error(Array.isArray(r.ar) ? "Lecture impossible pour ce texte." : "Rien à traduire");
+    if(keep) keep(a);
+    speakAr(a);
+  }catch(err){ toast(relayOld(err.message)); }
+}
+function speakEntry(e){
+  if(!e) return;
+  speakDarija(e.en, e.ar, a=>{ const x=entries.find(y=>y.id===e.id); if(x && x.en===e.en && !x.ar){ x.ar=a; save(); } });
+}
+$("#voiceTest").addEventListener("click",()=>{
+  // « Salam, labas 3lik ? » écrit en arabe pour la voix (pas affiché).
+  const v=bestVoice($("#voiceSel").value);
+  speakAr("السلام، لاباس عليك؟", v);
+});
+
+// ---------- List ----------
+function visible(){
+  const q=$("#search").value.trim().toLowerCase();
+  return entries.filter(e=>{
+    if(!inCurFolder(e)) return false;
+    if(filter==="todo" && e.status==="learned") return false;
+    if(filter==="done" && e.status!=="learned") return false;
+    return !q || [e.en,e.fr,e.note].some(v=>String(v||"").toLowerCase().includes(q));
+  }).sort((a,b)=>b.createdAt-a.createdAt);
+}
+const fmtDate = ms => new Date(ms).toLocaleDateString("fr-FR",{day:"numeric",month:"short"});
+function render(){
+  $("#countAll").textContent=entries.length;
+  $("#countTodo").textContent=entries.filter(e=>e.status!=="learned").length;
+  $("#empty").hidden = entries.length>0;
+  const items=visible(), list=$("#list");
+  renderFolderUI();
+  if(entries.length && !items.length){
+    const emptyFolder = curFolder!=="all" && !entries.some(inCurFolder);
+    list.innerHTML=`<li class="lookup">${emptyFolder ? "Aucun mot dans ce dossier pour l'instant. Choisis-le au moment d'ajouter un mot, ou via Modifier." : "Aucun résultat."}</li>`; return;
+  }
+  list.classList.toggle("selecting", selecting);
+  list.innerHTML = items.map(e=>{
+    const learned=e.status==="learned";
+    const confirm = confirmId===e.id ? `<div class="confirm">Supprimer « ${esc(e.en)} » ? <button class="btn" data-act="del-yes" data-id="${e.id}" style="background:var(--danger)">Supprimer</button><button class="btn ghost" data-act="del-no">Annuler</button></div>` : "";
+    return `<li class="entry${selected.has(e.id)?" selected":""}" data-id="${e.id}">
+      <p class="terms">${e.origin==="fr"
+        ? `<span class="fr">${esc(e.fr)}</span><span class="arrow">→</span><span class="en">${esc(e.en)}</span>`
+        : `<span class="en">${esc(e.en)}</span><span class="arrow">→</span><span class="fr">${esc(e.fr)}</span>`}</p>
+      ${e.note?`<p class="note">${esc(e.note)}</p>`:""}
+      ${e.exEn?`<p class="ex">💬 <i>${esc(e.exEn)}</i>${e.exFr?` — ${esc(e.exFr)}`:""}</p>`:""}
+      <div class="meta">
+        <span class="chip flags" aria-label="${e.origin==="fr"?"français vers darija":"darija vers français"}">${e.origin==="fr"?"🇫🇷➡️"+enFlag():enFlag()+"➡️🇫🇷"}</span>
+        <button class="chip ${learned?"done":"todo"}" data-act="toggle" data-id="${e.id}">${learned?"Acquis":"À revoir"}</button>
+        ${(f=>`<button class="chip fchip" data-act="move" data-id="${e.id}" title="${f?esc(f.name):"Ranger dans un dossier"}" aria-label="${f?"Dossier "+esc(f.name)+" : changer":"Ranger dans un dossier"}">${f?esc(f.emoji||"📁"):"📁"}</button>`)(folderById(e.folder))}
+        <span class="spacer"></span>
+        <button class="icon" data-act="speak" data-id="${e.id}" aria-label="Écouter">🔊</button>
+        <button class="icon" data-act="edit" data-id="${e.id}">Modifier</button>
+        <button class="icon danger" data-act="del" data-id="${e.id}" aria-label="Supprimer">✕</button>
+      </div>${confirm}
+    </li>`;
+  }).join("");
+}
+function resetForm(){
+  $("#enInput").value=""; $("#frInput").value=""; $("#noteInput").value="";
+  editingId=null; $("#saveBtn").textContent="Ajouter au carnet"; $("#cancelEdit").hidden=true; pending=null; updateLinks(); updateTranslateUI();
+  if(typeof setFolderSel==="function") setFolderSel(lastFolder());
+}
+$("#list").addEventListener("click",ev=>{
+  if(selecting){
+    const li=ev.target.closest(".entry[data-id]"); if(!li) return;
+    const id=li.dataset.id; selected.has(id) ? selected.delete(id) : selected.add(id);
+    li.classList.toggle("selected", selected.has(id)); updateSelBar(); return;
+  }
+  const b=ev.target.closest("[data-act]"); if(!b) return;
+  const e=entries.find(x=>x.id===b.dataset.id);
+  switch(b.dataset.act){
+    case "speak": speakEntry(e); break;
+    case "edit":
+      editingId=e.id; setOrigin(e.origin||"en");
+      $("#enInput").value=e.en; $("#frInput").value=e.fr; $("#noteInput").value=e.note||"";
+      $("#saveBtn").textContent="Enregistrer"; $("#cancelEdit").hidden=false; updateLinks(); updateTranslateUI();
+      setFolderSel(folderById(e.folder) ? e.folder : "");
+      showTab("list"); $("#addForm").scrollIntoView({block:"start"}); break;
+    case "del": confirmId=e.id; render(); break;
+    case "del-no": confirmId=null; render(); break;
+    case "del-yes": entries=entries.filter(x=>x.id!==b.dataset.id); confirmId=null; save(); render(); toast("Supprimé"); break;
+    case "toggle": e.status = e.status==="learned"?"new":"learned"; save(); render(); break;
+    case "move": openMoveSheet([e.id]); break;
+  }
+});
+$("#cancelEdit").addEventListener("click",()=>{ resetForm(); showTab("review"); });
+
+// ---------- Ranger des mots : bouton dossier, glisser-déposer, sélection multiple ----------
+let selecting=false; const selected=new Set();
+function setSelecting(on){
+  selecting=on; selected.clear();
+  $("#selBtn").textContent = on ? "Terminer" : "☑️ Sélectionner";
+  updateSelBar(); render();
+}
+function updateSelBar(){
+  $("#selBar").hidden = !selecting;
+  const n=selected.size; $("#selCount").textContent = n ? `${n} sélectionné${n>1?"s":""}` : "Touche les mots à ranger";
+  $("#selMove").disabled = !n;
+}
+$("#selBtn").addEventListener("click",()=>setSelecting(!selecting));
+$("#selCancel").addEventListener("click",()=>setSelecting(false));
+$("#selMove").addEventListener("click",()=>{ if(selected.size) openMoveSheet([...selected]); });
+
+// ---------- Tri automatique par Claude ----------
+let sortPlan=null, sortUndo=null;
+function openSortSheet(){
+  if(!canTranslate()){ toast("Configure d'abord le relais dans les Réglages."); return; }
+  if(!entries.length){ toast("Ton carnet est vide."); return; }
+  closeMoveSheet();
+  $("#sortSetup").hidden=false; $("#sortResult").hidden=true; $("#sortStatus").textContent=""; $("#sortRun").disabled=false;
+  $("#sortSheet").hidden=false;
+}
+function closeSortSheet(){ $("#sortSheet").hidden=true; sortPlan=null; }
+$("#sortBtn").addEventListener("click",openSortSheet);
+$("#sortClose").addEventListener("click",closeSortSheet);
+$("#sortBack").addEventListener("click",closeSortSheet);
+$("#sortRun").addEventListener("click",async()=>{
+  const all=$("#sortAll").checked, hint=$("#sortHint").value.trim();
+  const words = entries.filter(e => all || !folderById(e.folder));
+  if(!words.length){ $("#sortStatus").textContent="Tous tes mots sont déjà rangés. Coche « Retrier aussi… » pour tout revoir."; return; }
+  const btn=$("#sortRun"); btn.disabled=true;
+  // Plusieurs envois si le carnet est grand ; les dossiers créés à une étape servent aux suivantes.
+  let known = liveFolders().map(f=>({name:f.name, emoji:f.emoji||""}));
+  const created=[], assign=new Map(), CH=150;
+  try{
+    for(let i=0;i<words.length;i+=CH){
+      const part=words.slice(i,i+CH);
+      $("#sortStatus").textContent = words.length>CH ? `Claude trie… (${Math.min(i+CH,words.length)}/${words.length})` : "Claude trie tes mots…";
+      const r = await callRelay(settings,{sortWords:true, hint, folders:known, words:part.map(e=>({en:e.en, fr:e.fr, note:e.note||""}))});
+      if(!Array.isArray(r.assign)) throw new Error("Le relais n'est pas à jour : recolle son nouveau code dans Cloudflare.");
+      for(const f of (r.newFolders||[])) if(!known.some(k=>k.name.toLowerCase()===f.name.toLowerCase())){ known.push(f); created.push(f); }
+      for(const [idx,name] of r.assign) if(part[idx]) assign.set(part[idx].id, name);
+    }
+  }catch(err){
+    const m = /Rien à traduire/.test(err.message) ? "Le relais n'est pas à jour : recolle son nouveau code dans Cloudflare." : err.message;
+    $("#sortStatus").textContent="✗ "+m; btn.disabled=false; return;
+  }
+  btn.disabled=false; $("#sortStatus").textContent="";
+  sortPlan={assign, created, known};
+  showSortPreview();
+});
+function showSortPreview(){
+  const {assign, created, known}=sortPlan;
+  const groups=new Map();
+  let moved=0;
+  for(const e of entries){
+    const name=assign.get(e.id); if(!name) continue;
+    const cur=folderById(e.folder);
+    const changes = !cur || cur.name.toLowerCase()!==name.toLowerCase();
+    if(changes) moved++;
+    if(!groups.has(name)) groups.set(name,{total:0, movedWords:[]});
+    const g=groups.get(name); g.total++; if(changes) g.movedWords.push(e.origin==="fr"?e.fr:e.en);
+  }
+  const isNew = n => created.some(c=>c.name===n);
+  const emojiOf = n => (known.find(k=>k.name===n)||{}).emoji || "📁";
+  const order=[...groups.entries()].sort((a,b)=>b[1].total-a[1].total);
+  $("#sortSummary").textContent = moved
+    ? `${moved} mot${moved>1?"s":""} changeraient de dossier${created.length?`, et ${created.length} nouveau${created.length>1?"x":""} dossier${created.length>1?"s":""} serai${created.length>1?"ent":"t"} créé${created.length>1?"s":""}`:""}. Vérifie, puis touche Appliquer.`
+    : "Claude ne propose aucun changement : tes mots sont déjà bien rangés.";
+  $("#sortPreview").innerHTML = order.map(([name,g])=>`<div class="sortGroup">
+      <h3>${esc(emojiOf(name))} ${esc(name)} ${isNew(name)?'<span class="new">nouveau</span>':""}<span class="cnt">· ${g.total} mot${g.total>1?"s":""}${g.movedWords.length?` (dont ${g.movedWords.length} déplacé${g.movedWords.length>1?"s":""})`:""}</span></h3>
+      ${g.movedWords.length?`<p>${g.movedWords.slice(0,8).map(esc).join(" · ")}${g.movedWords.length>8?` · +${g.movedWords.length-8}`:""}</p>`:""}
+    </div>`).join("");
+  $("#sortApply").disabled = !moved;
+  $("#sortSetup").hidden=true; $("#sortResult").hidden=false;
+}
+$("#sortApply").addEventListener("click",()=>{
+  if(!sortPlan) return;
+  const {assign, created}=sortPlan;
+  const prev={}, createdIds=[];
+  for(const c of created){
+    const have=liveFolders().find(f=>f.name.toLowerCase()===c.name.toLowerCase());
+    if(!have){ const f=addFolder(c.name, c.emoji||"📁"); createdIds.push(f.id); }
+  }
+  const byName = n => liveFolders().find(f=>f.name.toLowerCase()===n.toLowerCase());
+  let n=0;
+  for(const e of entries){
+    const name=assign.get(e.id); if(!name) continue;
+    const f=byName(name); if(!f || e.folder===f.id) continue;
+    prev[e.id]=e.folder||""; e.folder=f.id; n++;
+  }
+  save(); sortUndo={prev, createdIds};
+  closeSortSheet(); curFolder="all"; render();
+  $("#undoSortBtn").hidden=false;
+  toast(`Tri appliqué : ${n} mot${n>1?"s":""} rangé${n>1?"s":""}${createdIds.length?`, ${createdIds.length} dossier${createdIds.length>1?"s":""} créé${createdIds.length>1?"s":""}`:""}`);
+});
+$("#undoSortBtn").addEventListener("click",()=>{
+  if(!sortUndo) return;
+  for(const id of sortUndo.createdIds) deleteFolder(id);
+  for(const e of entries) if(e.id in sortUndo.prev) e.folder=sortUndo.prev[e.id];
+  save(); sortUndo=null; $("#undoSortBtn").hidden=true; render(); toast("Tri annulé");
+});
+
+let moveIds=[];
+function openMoveSheet(ids){
+  moveIds=ids;
+  const one = ids.length===1 && entries.find(x=>x.id===ids[0]);
+  const cur = one ? (folderById(one.folder)?one.folder:"") : null;
+  $("#moveTitle").textContent = one ? `Ranger « ${one.origin==="fr"?one.fr:one.en} » dans…` : `Ranger ${ids.length} mots dans…`;
+  const tile=(id,label)=>`<button type="button" class="tile${cur===id?" current":""}" data-move="${esc(id)}">${label}</button>`;
+  $("#moveTiles").innerHTML = liveFolders().map(f=>tile(f.id,`<span class="te">${esc(f.emoji||"📁")}</span><span class="tn">${esc(f.name)}</span>`)).join("")
+    + tile("",`<span class="te">🗂️</span><span class="tn">Sans dossier</span>`)
+    + `<button type="button" class="tile add" data-move="__new"><span class="te">＋</span><span class="tn">Nouveau</span></button>`;
+  $("#moveSheet").hidden=false;
+}
+function closeMoveSheet(){ $("#moveSheet").hidden=true; moveIds=[]; }
+async function moveTo(fid){
+  const ids=moveIds; if(!ids.length) return;
+  if(fid==="__new"){ const f=await openFolderDialog(); if(!f) return; fid=f.id; }
+  let n=0; for(const e of entries) if(ids.includes(e.id) && (e.folder||"")!==fid){ e.folder=fid; n++; }
+  closeMoveSheet();
+  if(selecting) setSelecting(false);
+  if(n){ save(); render(); }
+  const f=folderById(fid);
+  toast(`${ids.length>1?ids.length+" mots rangés":"Rangé"} dans ${f?folderLabel(f):"Sans dossier"}`);
+}
+$("#moveTiles").addEventListener("click",ev=>{ const t=ev.target.closest("[data-move]"); if(t) moveTo(t.dataset.move); });
+$("#moveClose").addEventListener("click",closeMoveSheet);
+
+// Glisser-déposer : appui long (doigt) ou glissement (souris) sur un mot, puis lâcher sur un dossier.
+let lp=null;
+function tileAt(x,y){ const el=document.elementFromPoint(x,y); return el && el.closest ? el.closest("#moveTiles [data-move]") : null; }
+function endWordDrag(drop){
+  if(!lp) return;
+  clearTimeout(lp.timer);
+  if(lp.active){
+    lp.li.classList.remove("lifted"); lp.ghost && lp.ghost.remove();
+    document.querySelectorAll("#moveTiles .hover").forEach(t=>t.classList.remove("hover"));
+    // Lâcher sur un dossier range le mot ; lâcher ailleurs referme simplement le panneau.
+    if(drop) moveTo(drop.dataset.move); else closeMoveSheet();
+  }
+  lp=null;
+}
+function activateDrag(){
+  if(!lp || lp.active) return;
+  lp.active=true;
+  try{ navigator.vibrate && navigator.vibrate(12); }catch(e){}
+  lp.li.classList.add("lifted");
+  const e=entries.find(x=>x.id===lp.id);
+  const g=document.createElement("div"); g.className="dragGhost";
+  g.textContent = e ? (e.origin==="fr"?e.fr:e.en) : "";
+  document.body.appendChild(g); lp.ghost=g; placeGhost(lp.x,lp.y);
+  openMoveSheet([lp.id]);
+}
+function placeGhost(x,y){ if(lp && lp.ghost){ lp.ghost.style.left=x+"px"; lp.ghost.style.top=y+"px"; } }
+$("#list").addEventListener("pointerdown",ev=>{
+  if(selecting || ev.button>0) return;
+  if(ev.target.closest("button,a,input")) return;
+  const li=ev.target.closest(".entry[data-id]"); if(!li) return;
+  lp={id:li.dataset.id, li, x:ev.clientX, y:ev.clientY, sx:ev.clientX, sy:ev.clientY, touch:ev.pointerType!=="mouse", active:false, pid:ev.pointerId};
+  if(lp.touch) lp.timer=setTimeout(activateDrag, 450);
+});
+document.addEventListener("pointermove",ev=>{
+  if(!lp || ev.pointerId!==lp.pid) return;
+  lp.x=ev.clientX; lp.y=ev.clientY;
+  const d=Math.hypot(lp.x-lp.sx, lp.y-lp.sy);
+  if(!lp.active){
+    if(lp.touch){ if(d>8) endWordDrag(null); }   // le doigt bouge avant l'appui long : c'est un défilement
+    else if(d>6) activateDrag();
+    return;
+  }
+  placeGhost(lp.x,lp.y);
+  const t=tileAt(lp.x,lp.y);
+  document.querySelectorAll("#moveTiles [data-move]").forEach(x=>x.classList.toggle("hover", x===t));
+});
+document.addEventListener("pointerup",ev=>{ if(lp && ev.pointerId===lp.pid) endWordDrag(lp.active ? tileAt(ev.clientX,ev.clientY) : null); });
+// Sur iPhone, Safari peut annuler le « pointeur » en plein glisser : on continue alors avec les
+// événements tactiles (touchmove / touchend), qui eux arrivent toujours.
+document.addEventListener("pointercancel",ev=>{ if(lp && ev.pointerId===lp.pid && !(lp.touch && lp.active)) endWordDrag(null); });
+function dragTouchAt(t){
+  if(!t) return; lp.x=t.clientX; lp.y=t.clientY; placeGhost(lp.x,lp.y);
+  const tile=tileAt(lp.x,lp.y);
+  document.querySelectorAll("#moveTiles [data-move]").forEach(x=>x.classList.toggle("hover", x===tile));
+}
+document.addEventListener("touchend",ev=>{
+  if(!lp || !lp.active) return;
+  const t=ev.changedTouches && ev.changedTouches[0];
+  endWordDrag(t ? tileAt(t.clientX,t.clientY) : null);
+});
+document.addEventListener("touchcancel",()=>{ if(lp && lp.active) endWordDrag(null); });
+// Pendant un glisser, la page ne doit pas défiler.
+document.addEventListener("touchmove",ev=>{ if(lp && lp.active){ ev.preventDefault(); dragTouchAt(ev.touches[0]); } },{passive:false});
+document.addEventListener("contextmenu",ev=>{ if(lp) ev.preventDefault(); });
+$("#search").addEventListener("input",()=>{ $("#searchClear").hidden=!$("#search").value; render(); });
+$("#searchClear").addEventListener("click",ev=>{ ev.preventDefault(); const i=$("#search"); i.value=""; $("#searchClear").hidden=true; render(); i.focus(); });
+document.querySelectorAll("[data-filter]").forEach(b=>b.addEventListener("click",()=>{
+  filter=b.dataset.filter; document.querySelectorAll("[data-filter]").forEach(x=>x.setAttribute("aria-pressed",x===b)); render();
+}));
+// Auto mode works in two steps: "Traduire" shows the translation, then "Ajouter au carnet" saves it.
+let pending=null; // {origin, src, text}
+function srcInput(){ return origin==="fr" ? $("#frInput") : $("#enInput"); }
+function pendingValid(){ return !!pending && pending.origin===origin && pending.src===srcInput().value.trim(); }
+function updateSaveLabel(){
+  const btn=$("#saveBtn"); if(btn.disabled) return;
+  if(editingId) btn.textContent="Enregistrer";
+  else if(autoMode()) btn.textContent = pendingValid() ? (knownNow.length ? "Ajouter quand même" : "Ajouter au carnet") : "Traduire";
+  else btn.textContent = knownNow.length ? "Ajouter quand même" : "Ajouter au carnet";
+}
+// ---------- Déjà dans le carnet ? (dans les deux sens : on compare au français ET au darija) ----------
+const normTerm = t => String(t||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+  .replace(/[’`]/g,"'").replace(/[.,;:!?¿¡"«»()…]/g," ").replace(/\s+/g," ").trim()
+  .replace(/^(le|la|les|un|une|des|du|se) +/,"").replace(/^(l|s|d)'/,"").trim();
+// Darija : deux clés tolérantes. A : ou/u/w → o, e → a, y → i, sh → ch, q → 9, lettres doublées simplifiées
+// (chokran = choukran = shukran, 3afak = 3afek, mzyan = mzian, dyal = dial, howa = huwa).
+// B : pareil mais sans les « e » muets (bslama = beslama, bzaf = bezzaf).
+const djBase = t => String(t||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+  .replace(/sh/g,"ch").replace(/ou/g,"o").replace(/[uw]/g,"o").replace(/y/g,"i").replace(/q/g,"9");
+const djFold = s => s.replace(/[^a-z0-9]/g,"").replace(/(.)\1+/g,"$1");
+const djKeys = t => { const b=djBase(t), a=djFold(b.replace(/e/g,"a")), z=djFold(b.replace(/e/g,"")); return [a&&"A:"+a, z&&"B:"+z].filter(Boolean); };
+let knownNow=[];
+function findKnown(terms){
+  const keys=new Set(terms.map(normTerm).filter(Boolean)); if(!keys.size) return [];
+  const dj=new Set(terms.flatMap(djKeys));
+  return entries.filter(e=>e.id!==editingId && (keys.has(normTerm(e.en)) || keys.has(normTerm(e.fr)) || djKeys(e.en).some(k=>dj.has(k))))
+    .sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,3);
+}
+function updateKnown(){
+  const box=$("#knownBox"); if(!box) return;
+  const src=srcInput().value.trim();
+  const terms = editingId || !src ? [] : [src, ...(pendingValid() ? [pending.text, ...(pending.alts||[])] : []),
+    ...(!autoMode() ? [(origin==="fr"?$("#enInput"):$("#frInput")).value] : [])];
+  knownNow = findKnown(terms);
+  box.hidden = !knownNow.length;
+  box.innerHTML = knownNow.length ? `<strong>📒 Déjà dans ton carnet</strong>` + knownNow.map(e=>{
+    const a = e.origin==="fr" ? [e.fr,e.en] : [e.en,e.fr], f=folderById(e.folder);
+    const d = new Date(e.createdAt||Date.now()).toLocaleDateString("fr-FR",{day:"numeric",month:"short"});
+    return `<button type="button" data-known="${esc(e.id)}"><span class="kt">${esc(a[0])} → <b>${esc(a[1])}</b></span><span class="kd">${f?esc(f.emoji||"📁")+" ":""}${e.status==="learned"?"✅ ":""}${d}</span></button>`;
+  }).join("") : "";
+  const btn=$("#saveBtn"); if(btn && !btn.disabled) updateSaveLabel();
+}
+$("#knownBox").addEventListener("click",ev=>{
+  const b=ev.target.closest("[data-known]"); if(!b) return;
+  const e=entries.find(x=>x.id===b.dataset.known); if(!e) return;
+  curFolder="all"; filter="all";
+  document.querySelectorAll("[data-filter]").forEach(x=>x.setAttribute("aria-pressed",x.dataset.filter==="all"));
+  $("#search").value = e.origin==="fr" ? e.fr : e.en; $("#searchClear").hidden=false;
+  showTab("review"); setRevMode("list"); render();
+});
+["#enInput","#frInput"].forEach(s=>$(s).addEventListener("input",()=>updateKnown()));
+let askFor=null;
+function showResult(){
+  const ok = autoMode() && pendingValid();
+  $("#result").hidden = !ok;
+  if(ok){
+    $("#resultFlag").textContent = origin==="fr" ? "🇲🇦" : "🇫🇷";
+    $("#resultText").textContent = pending.text;
+    $("#resultSpeak").hidden = origin!=="fr"; // only the Darija side is spoken
+    // Highlight 🔄 when the context changed since this translation was made.
+    const stale = $("#noteInput").value.trim() !== (pending.ctx||"");
+    $("#resultRetry").classList.toggle("attn", stale);
+    $("#resultRetry").setAttribute("aria-label", stale ? "Le contexte a changé : relancer la traduction" : "Relancer la traduction");
+    const alts = pending.alts||[];
+    $("#resultAlts").hidden = !alts.length;
+    $("#resultAlts").innerHTML = alts.length ? "Autres possibilités : "+alts.map((a,i)=>`<button type="button" data-alt="${i}">${esc(a)}</button>`).join("") : "";
+    $("#resultEx").hidden = !pending.exEn;
+    $("#resultExEn").textContent = pending.exEn ? "« "+pending.exEn+" »" : "";
+    $("#resultExFr").textContent = pending.exFr||"";
+    $("#resultTip").hidden = !pending.tip;
+    $("#resultTip").textContent = pending.tip ? "💡 "+pending.tip : "";
+    if(askFor!==pending.text+"|"+pending.src){ askFor=null; $("#askBox").hidden=true; $("#askBtn").hidden=false; }
+  }
+  updateKnown();
+  if(typeof updateClearBtns==="function") updateClearBtns();
+}
+function clearPending(){ pending=null; showResult(); }
+function updateClearBtns(){
+  const has = ["#enInput","#frInput","#noteInput"].some(s=>$(s).value.trim()) || !!pending;
+  document.querySelectorAll("[data-clear]").forEach(b=>{ b.hidden = !has || b.previousElementSibling!==srcInput(); });
+}
+function clearAll(){
+  $("#enInput").value=""; $("#frInput").value=""; $("#noteInput").value="";
+  pending=null; lastExtras=null; updateLinks(); showResult(); updateClearBtns();
+  srcInput().focus();
+}
+document.querySelectorAll("[data-clear]").forEach(b=>b.addEventListener("click",ev=>{ ev.preventDefault(); clearAll(); }));
+["#enInput","#frInput","#noteInput"].forEach(s=>$(s).addEventListener("input",updateClearBtns));
+["#enInput","#frInput"].forEach(s=>$(s).addEventListener("input",showResult));
+$("#resultSpeak").addEventListener("click",()=>{
+  const p=pending; if(p) speakDarija(p.text, p.ar, a=>{ if(pending===p) p.ar=a; });
+});
+$("#resultExSpeak").addEventListener("click",()=>{
+  const p=pending; if(p && p.exEn) speakDarija(p.exEn, p.exAr, a=>{ if(pending===p) p.exAr=a; });
+});
+// Tapping an alternative makes it the chosen translation (the previous one becomes an alternative).
+$("#resultAlts").addEventListener("click",ev=>{
+  const b=ev.target.closest("[data-alt]"); if(!b || !pending) return;
+  const i=+b.dataset.alt, alts=[...pending.alts]; const chosen=alts[i]; alts[i]=pending.text;
+  // Vers le darija, l'écriture arabe (pour la voix) suit la variante choisie.
+  const altsAr=[...(pending.altsAr||[])]; let ar=pending.ar;
+  if(pending.origin==="fr"){ ar=altsAr[i]||""; altsAr[i]=pending.ar||""; }
+  pending={...pending, text:chosen, alts, altsAr, ar}; showResult();
+});
+$("#noteInput").addEventListener("input",()=>{ if(pending) showResult(); });
+$("#resultRetry").addEventListener("click",async()=>{
+  if(!pendingValid()) return;
+  const btn=$("#resultRetry"), txt=$("#resultText"); btn.disabled=true; txt.style.opacity=".45";
+  try{
+    const r = await fetchTranslation();
+    const changed = r.text !== pending.text;
+    pending = {origin, src:pending.src, ctx:$("#noteInput").value.trim(), ...r};
+    toast(changed ? "Traduction mise à jour" : "Même traduction avec ce contexte");
+  }catch(err){ toast(err.message); }
+  finally{ btn.disabled=false; txt.style.opacity=""; showResult(); }
+});
+$("#addForm").addEventListener("submit",async ev=>{
+  ev.preventDefault();
+  let en=$("#enInput").value.trim(), fr=$("#frInput").value.trim();
+  const note=$("#noteInput").value.trim();
+  if(autoMode()){
+    const fromFr = origin==="fr", src = fromFr ? $("#frInput") : $("#enInput");
+    if(!src.value.trim()){ toast(fromFr?"Écris d'abord la phrase en français.":"Écris d'abord le mot en darija."); src.focus(); return; }
+    // Step 1: translate and show it.
+    if(!pendingValid()){
+      const btn=$("#saveBtn"), text=src.value.trim(); btn.disabled=true; btn.textContent="Traduction…";
+      try{
+        const r = await fetchTranslation();
+        pending = {origin, src:text, ctx:$("#noteInput").value.trim(), ...r};
+      }catch(err){
+        toast(err.message+" Active « Ma propre traduction » pour l'écrire toi-même.");
+      }finally{ btn.disabled=false; showResult(); }
+      return;
+    }
+    // Step 2: save what is on screen.
+    if(fromFr){ fr=pending.src; en=pending.text; } else { en=pending.src; fr=pending.text; }
+    const dup=knownNow.length>0 || entries.some(x=>x.en.toLowerCase()===en.toLowerCase());
+    entries.push({id:uid(),en,fr,note,origin,status:"new",createdAt:Date.now(), exEn:pending.exEn||"", exFr:pending.exFr||"", tip:pending.tip||"", folder:chosenFolder(), ar:pending.ar||"", exAr:pending.exAr||""});
+    if(save()) toast(dup?"Ajouté (tu l'avais déjà noté)":"Ajouté au carnet");
+    resetForm(); render();
+    return;
+  }
+  if(!en||!fr){
+    // One side filled and translation set up: translate first, let the user check, then they tap Add again.
+    if((en||fr) && canTranslate()){
+      if(!en && fr && origin!=="fr") setOrigin("fr");
+      if(en && !fr && origin!=="en") setOrigin("en");
+      if(await translateNow()) toast("Vérifie la traduction, puis touche Ajouter.");
+      return;
+    }
+    toast("Remplis le darija et le français."); (en?$("#frInput"):$("#enInput")).focus(); return;
+  }
+  const wasEditing = !!editingId;
+  const target = editingId && entries.find(x=>x.id===editingId);
+  if(editingId && !target){ toast("Ce mot a été supprimé sur un autre appareil."); resetForm(); showTab("review"); return; }
+  if(target){ if(target.en!==en) target.ar=""; Object.assign(target,{en,fr,note,origin,folder:chosenFolder()}); if(save()) toast("Modifié"); }
+  else{
+    const dup=knownNow.length>0 || entries.some(x=>x.en.toLowerCase()===en.toLowerCase());
+    // Own translation: keep the example only if it belongs to this same source text.
+    const src = origin==="fr" ? fr : en;
+    const ex = (lastExtras && lastExtras.origin===origin && lastExtras.src===src) ? lastExtras : {};
+    // L'écriture arabe n'est gardée que si le darija enregistré est bien celui que Claude a écrit ou lu.
+    const arOk = ex.ar && (ex.origin==="fr" ? ex.text : ex.src)===en;
+    entries.push({id:uid(),en,fr,note,origin,status:"new",createdAt:Date.now(), exEn:ex.exEn||"", exFr:ex.exFr||"", tip:ex.tip||"", folder:chosenFolder(), ar:arOk?ex.ar:"", exAr:ex.exAr||""});
+    if(save()) toast(dup?"Ajouté (tu l'avais déjà noté)":"Ajouté au carnet");
+  }
+  resetForm(); render();
+  if(wasEditing) showTab("review");
+});
+
+// ---------- Tabs ----------
+function showTab(t){
+  if(t!=="review"){ if(typeof selecting!=="undefined" && selecting) setSelecting(false); if(typeof closeMoveSheet==="function") closeMoveSheet(); if(typeof closeSortSheet==="function") closeSortSheet(); }
+  document.querySelectorAll("[data-tab]").forEach(x=>x.setAttribute("aria-selected",x.dataset.tab===t));
+  ["list","review","prof","backup"].forEach(v=>$("#view-"+v).hidden = v!==t);
+  if(t==="prof") renderProf();
+  if(t==="review" && revMode==="cards") startDeck();
+  if(t==="backup"){ showLastBackup(); fillSettings(); $("#testResult").textContent=""; if(!syncing) syncStatusIdle(); }
+  window.scrollTo(0,0);
+}
+document.querySelectorAll("[data-tab]").forEach(b=>b.addEventListener("click",()=>{
+  if(b.dataset.tab!=="list" && editingId){ resetForm(); }   // leaving an edit abandons it
+  showTab(b.dataset.tab);
+}));
+
+// Review has two modes: the word list, or flashcards.
+let revMode="list"; try{ revMode=localStorage.getItem("kalima-up-revmode")==="cards"?"cards":"list"; }catch(e){}
+function setRevMode(m){
+  revMode=m; try{ localStorage.setItem("kalima-up-revmode",m); }catch(e){}
+  document.querySelectorAll("[data-mode]").forEach(x=>x.setAttribute("aria-pressed",x.dataset.mode===m));
+  $("#revList").hidden = m!=="list"; $("#revCards").hidden = m!=="cards";
+  if(m==="cards") startDeck();
+}
+document.querySelectorAll("[data-mode]").forEach(b=>b.addEventListener("click",()=>setRevMode(b.dataset.mode)));
+
+// ---------- Folders UI ----------
+const LASTFOLDER_KEY="kalima-up-lastfolder", REVFOLDER_KEY="kalima-up-revfolder";
+const lastFolder = () => { let v=""; try{ v=localStorage.getItem(LASTFOLDER_KEY)||""; }catch(e){} return folderById(v) ? v : ""; };
+let curFolder="all"; try{ curFolder=localStorage.getItem(REVFOLDER_KEY)||"all"; }catch(e){}
+function inCurFolder(e){
+  if(curFolder==="all") return true;
+  const f = folderById(e.folder) ? e.folder : "";
+  return curFolder==="none" ? f==="" : f===curFolder;
+}
+const chosenFolder = () => { const v=$("#folderSel").value; return folderById(v) ? v : ""; };
+function fillFolderSel(){
+  const sel=$("#folderSel"), keep=sel.value;
+  sel.innerHTML = `<option value="">Sans dossier</option>` +
+    liveFolders().map(f=>`<option value="${esc(f.id)}">${esc(folderLabel(f))}</option>`).join("") +
+    `<option value="__new">＋ Nouveau dossier…</option>`;
+  sel.value = folderById(keep) ? keep : (keep==="" ? "" : lastFolder());
+}
+function setFolderSel(id){ fillFolderSel(); $("#folderSel").value = folderById(id) ? id : ""; $("#folderHint").textContent=""; }
+// Claude suggests a folder by name: pre-select it (still changeable) unless editing.
+function suggestFolder(name){
+  if(editingId) return;
+  const f = liveFolders().find(x=>x.name.toLowerCase()===String(name).toLowerCase()); if(!f) return;
+  if($("#folderSel").value!==f.id){ setFolderSel(f.id); $("#folderHint").textContent="suggéré par Claude"; }
+}
+let selBefore="";
+$("#folderSel").addEventListener("focus",()=>{ selBefore=$("#folderSel").value; });
+$("#folderSel").addEventListener("change",async()=>{
+  const sel=$("#folderSel"); $("#folderHint").textContent="";
+  if(sel.value==="__new"){
+    const f = await openFolderDialog();
+    setFolderSel(f ? f.id : selBefore);
+  }
+  if(!editingId){ try{ localStorage.setItem(LASTFOLDER_KEY, chosenFolder()); }catch(e){} }
+  selBefore=sel.value;
+});
+function renderFolderChips(){
+  const box=$("#folderChips"); if(!box) return;
+  const live=liveFolders();
+  if(curFolder!=="all" && curFolder!=="none" && !folderById(curFolder)) curFolder="all";
+  const count = id => entries.filter(e => id==="all" ? true : id==="none" ? !folderById(e.folder) : e.folder===id).length;
+  const chip = (id,label) => `<button type="button" data-folder="${esc(id)}" aria-pressed="${curFolder===id}">${label}<span class="n">${count(id)}</span></button>`;
+  box.innerHTML = chip("all","Tous") + live.map(f=>chip(f.id, esc(folderLabel(f)))).join("") +
+    (live.length ? chip("none","Sans dossier") : "") +
+    `<button type="button" class="add" data-folder-new aria-label="Nouveau dossier">＋ Dossier</button>`;
+}
+$("#folderChips").addEventListener("click",async ev=>{
+  const b=ev.target.closest("button"); if(!b) return;
+  if(b.hasAttribute("data-folder-new")){ const f=await openFolderDialog(); if(f){ curFolder=f.id; } }
+  else curFolder=b.dataset.folder;
+  try{ localStorage.setItem(REVFOLDER_KEY,curFolder); }catch(e){}
+  render(); if(revMode==="cards") startDeck();
+});
+function renderFolderMgr(){
+  const ul=$("#folderMgr"); if(!ul) return;
+  const live=liveFolders();
+  if(!live.length){ ul.innerHTML=`<li class="lookup">Aucun dossier pour l'instant.</li>`; return; }
+  ul.innerHTML = live.map(f=>{
+    const n=entries.filter(e=>e.folder===f.id).length;
+    const confirm = folderConfirm===f.id ? `<div class="confirmRow">Supprimer « ${esc(f.name)} » ? Ses ${n} mot(s) iront dans « Sans dossier ».
+      <button class="btn" type="button" data-fdel-yes="${esc(f.id)}" style="background:var(--danger)">Supprimer</button>
+      <button class="btn ghost" type="button" data-fdel-no>Annuler</button></div>` : "";
+    return `<li><span class="fname">${esc(folderLabel(f))}</span><span class="fcount">${n} mot${n>1?"s":""}</span>
+      <button class="icon" type="button" data-fedit="${esc(f.id)}">Modifier</button>
+      <button class="icon danger" type="button" data-fdel="${esc(f.id)}" aria-label="Supprimer le dossier">✕</button>${confirm}</li>`;
+  }).join("");
+}
+let folderConfirm=null;
+$("#folderMgr").addEventListener("click",async ev=>{
+  const b=ev.target.closest("button"); if(!b) return;
+  if(b.dataset.fedit){ await openFolderDialog(folderById(b.dataset.fedit)); }
+  else if(b.dataset.fdel){ folderConfirm=b.dataset.fdel; }
+  else if(b.hasAttribute("data-fdel-no")){ folderConfirm=null; }
+  else if(b.dataset.fdelYes){ deleteFolder(b.dataset.fdelYes); folderConfirm=null; toast("Dossier supprimé"); }
+  render();
+});
+$("#newFolderBtn").addEventListener("click",async()=>{ await openFolderDialog(); render(); });
+function renderFolderUI(){ fillFolderSel(); renderFolderChips(); renderFolderMgr(); }
+
+// Create or edit a folder in a small dialog. Resolves with the folder, or null if cancelled.
+const EMOJIS=["💼","✈️","🎬","📚","💬","🍽️","🏠","💻","⚽","🎵","🛒","❤️"];
+function openFolderDialog(existing){
+  return new Promise(resolve=>{
+    const dlg=$("#folderDlg"); let emoji = existing ? existing.emoji : EMOJIS[0];
+    $("#folderDlgTitle").textContent = existing ? "Modifier le dossier" : "Nouveau dossier";
+    $("#folderOk").textContent = existing ? "Enregistrer" : "Créer";
+    $("#folderName").value = existing ? existing.name : "";
+    const pick=$("#emojiPick");
+    const paint=()=>{ pick.innerHTML=EMOJIS.map(e=>`<button type="button" data-emoji="${e}" aria-pressed="${e===emoji}">${e}</button>`).join(""); };
+    paint();
+    pick.onclick=ev=>{ const b=ev.target.closest("[data-emoji]"); if(b){ emoji=b.dataset.emoji; paint(); } };
+    const done=(val)=>{ dlg.close(); $("#folderForm").onsubmit=null; $("#folderCancel").onclick=null; dlg.oncancel=null; resolve(val); };
+    $("#folderCancel").onclick=()=>done(null);
+    dlg.oncancel=(e)=>{ e.preventDefault(); done(null); };
+    $("#folderForm").onsubmit=ev=>{
+      ev.preventDefault();
+      const name=$("#folderName").value.trim().replace(/\s+/g," ");
+      if(!name){ toast("Donne un nom au dossier."); $("#folderName").focus(); return; }
+      const clash=liveFolders().find(f=>f.name.toLowerCase()===name.toLowerCase() && (!existing || f.id!==existing.id));
+      if(clash){ toast("Un dossier porte déjà ce nom."); return; }
+      if(existing){ updateFolder(existing.id,{name,emoji}); toast("Dossier modifié"); done(folderById(existing.id)); }
+      else { const f=addFolder(name,emoji); toast("Dossier créé"); done(f); }
+    };
+    if(dlg.showModal) dlg.showModal(); else dlg.setAttribute("open","");
+    setTimeout(()=>$("#folderName").focus(),50);
+  });
+}
+
+// ---------- Review ----------
+function startDeck(){
+  const inc=$("#incDone").checked;
+  deck=entries.filter(e=>inCurFolder(e) && (inc||e.status!=="learned")).map(e=>e.id);
+  for(let i=deck.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[deck[i],deck[j]]=[deck[j],deck[i]];}
+  pos=0; revealed=false; renderCard();
+}
+const enFlag = () => "🇲🇦";
+function renderButtons(){
+  $("#flashBtns").innerHTML = `<span class="spacer"></span><button class="btn ghost" data-r="speak" aria-label="Écouter la prononciation">🔊 Écouter</button><span class="spacer"></span>`;
+}
+function renderCard(){
+  const flash=$("#flash"), btns=$("#flashBtns"), prog=$("#progress");
+  const plain = html => `<div class="card3d"><div class="face">${html}</div></div>`;
+  if(!entries.length){ flash.innerHTML=plain(`<div class="side">Rien à réviser</div><div>Traduis des mots dans l'onglet 🌐 Traduire et ajoute-les au carnet.</div>`); btns.innerHTML=""; prog.textContent=""; return; }
+  if(pos>=deck.length){
+    const folderEmpty = curFolder!=="all" && !entries.some(inCurFolder);
+    flash.innerHTML = plain(deck.length ? `<div class="side">Bravo</div><div class="word">Série terminée</div>`
+      : folderEmpty ? `<div class="side">Dossier vide</div><div class="note">Ajoute des mots dans ce dossier, ou choisis « Tous ».</div>`
+      : `<div class="side">Tout est acquis</div><div class="note">Coche « Inclure les acquis » pour les revoir.</div>`);
+    btns.innerHTML=`<span class="spacer"></span><button class="btn" data-r="restart">Nouvelle série</button><span class="spacer"></span>`; prog.textContent=""; return;
+  }
+  const e=entries.find(x=>x.id===deck[pos]); if(!e){ pos++; return renderCard(); }
+  const enSide = {flag:enFlag(), text:e.en, label:"Darija"}, frSide = {flag:"🇫🇷", text:e.fr, label:"Français"};
+  const [a,b] = dir==="en" ? [enSide,frSide] : [frSide,enSide];
+  // Rebuilt fresh for each card, so a new card always appears front-side up with no animation.
+  flash.innerHTML = `<div class="swiper" id="swiper">
+    <div class="stamp ko" aria-hidden="true">À revoir</div><div class="stamp ok" aria-hidden="true">Je savais</div>
+    <div class="card3d${revealed?" flipped":""}" id="card3d" role="button" tabindex="0" aria-label="Carte : toucher pour retourner, glisser à droite si tu savais, à gauche pour revoir. Flèches gauche et droite au clavier.">
+      <div class="face front"><span class="flag" role="img" aria-label="${a.label}">${a.flag}</span><div class="word">${esc(a.text)}</div></div>
+      <div class="face back" aria-hidden="${!revealed}"><span class="flag" role="img" aria-label="${b.label}">${b.flag}</span><div class="word">${esc(b.text)}</div>${e.note?`<div class="note">${esc(e.note)}</div>`:""}${e.exEn?`<div class="ex">💬 <i>${esc(e.exEn)}</i>${e.exFr?`<br>${esc(e.exFr)}`:""}</div>`:""}${e.tip?`<div class="tip">💡 ${esc(e.tip)}</div>`:""}</div>
+    </div>
+  </div>`;
+  renderButtons();
+  prog.textContent=`Carte ${pos+1} sur ${deck.length}`;
+}
+function flipCard(){
+  const c=$("#card3d"); if(!c) return;
+  revealed=!revealed;
+  c.classList.toggle("flipped",revealed);
+  c.querySelector(".face.back").setAttribute("aria-hidden",String(!revealed));
+}
+// Record the answer for the current card and move on.
+function answer(knew){
+  const e=entries.find(x=>x.id===deck[pos]);
+  if(e){ e.status = knew ? "learned" : "new"; save(); render(); }
+  pos++; revealed=false; renderCard();
+}
+// Fly the card off-screen in the swipe direction, then answer.
+function flyOut(knew){
+  const sw=$("#swiper"); if(!sw || sw.dataset.gone) return;
+  sw.dataset.gone="1";
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches){ answer(knew); return; }
+  sw.classList.remove("dragging"); sw.classList.add("leaving");
+  sw.style.transform=`translateX(${(knew?1:-1)*(window.innerWidth+120)}px) rotate(${knew?24:-24}deg)`;
+  setStamps(knew?1:-1);
+  setTimeout(()=>answer(knew), 260);
+}
+function setStamps(r){ // r in [-1,1]: negative = left (à revoir), positive = right (je savais)
+  const sw=$("#swiper"); if(!sw) return;
+  sw.querySelector(".stamp.ok").style.opacity = Math.max(0, r);
+  sw.querySelector(".stamp.ko").style.opacity = Math.max(0, -r);
+}
+// Pointer handling: a tap flips, a horizontal drag swipes. Vertical moves scroll the page.
+let drag=null;
+$("#flash").addEventListener("pointerdown",ev=>{
+  const sw=ev.target.closest("#swiper"); if(!sw || sw.dataset.gone) return;
+  drag={id:ev.pointerId, x:ev.clientX, y:ev.clientY, dx:0, dy:0, active:false, sw};
+});
+$("#flash").addEventListener("pointermove",ev=>{
+  if(!drag || ev.pointerId!==drag.id) return;
+  drag.dx=ev.clientX-drag.x; drag.dy=ev.clientY-drag.y;
+  if(!drag.active){
+    // The card owns every gesture that starts on it (the page never scrolls from here),
+    // so a slightly diagonal swipe still counts.
+    if(Math.abs(drag.dx)>8){ drag.active=true; drag.sw.classList.add("dragging"); try{ drag.sw.setPointerCapture(drag.id); }catch(e){} }
+    else return;
+  }
+  const w=drag.sw.offsetWidth||300;
+  drag.sw.style.transform=`translateX(${drag.dx}px) rotate(${drag.dx/w*14}deg)`;
+  setStamps(Math.max(-1,Math.min(1,drag.dx/(w*0.35))));
+});
+function endDrag(ev, cancelled){
+  if(!drag || ev.pointerId!==drag.id) return;
+  const d=drag; drag=null;
+  if(!d.active){ if(!cancelled && Math.abs(d.dx)<10 && Math.abs(d.dy)<10) flipCard(); return; }
+  d.sw.classList.remove("dragging");
+  const w=d.sw.offsetWidth||300;
+  if(!cancelled && Math.abs(d.dx) > w*0.28) flyOut(d.dx>0);
+  else { d.sw.style.transform=""; setStamps(0); }
+}
+$("#flash").addEventListener("pointerup",ev=>endDrag(ev,false));
+// iOS Safari can still start a page scroll from a touch: block it when the touch begins on the card.
+$("#flash").addEventListener("touchmove",ev=>{ if(ev.target.closest("#swiper")) ev.preventDefault(); },{passive:false});
+$("#flash").addEventListener("pointercancel",ev=>endDrag(ev,true));
+$("#flash").addEventListener("keydown",ev=>{
+  if(ev.target.id!=="card3d") return;
+  if(ev.key===" "||ev.key==="Enter"){ ev.preventDefault(); flipCard(); }
+  else if(ev.key==="ArrowRight"){ ev.preventDefault(); flyOut(true); }
+  else if(ev.key==="ArrowLeft"){ ev.preventDefault(); flyOut(false); }
+});
+document.addEventListener("keydown",ev=>{
+  if($("#view-review").hidden || $("#revCards").hidden) return;
+  if(ev.target.id==="card3d" || !$("#swiper")) return; // the focused card handles its own keys
+  const typing = ev.target.closest && ev.target.closest("input,textarea,select,[contenteditable]");
+  if(typing) return;
+  const onButton = ev.target.closest && ev.target.closest("button,a");
+  if(ev.key===" "||ev.key==="Enter"){ if(onButton) return; ev.preventDefault(); flipCard(); }
+  else if(ev.key==="ArrowRight"){ ev.preventDefault(); flyOut(true); }
+  else if(ev.key==="ArrowLeft"){ ev.preventDefault(); flyOut(false); }
+});
+$("#flashBtns").addEventListener("click",ev=>{
+  const b=ev.target.closest("[data-r]"); if(!b) return;
+  const e=entries.find(x=>x.id===deck[pos]);
+  if(b.dataset.r==="restart") return startDeck();
+  if(b.dataset.r==="speak"){ if(e) speakEntry(e); return; }
+});
+document.querySelectorAll("[data-dir]").forEach(b=>b.addEventListener("click",()=>{
+  dir=b.dataset.dir; document.querySelectorAll("[data-dir]").forEach(x=>x.setAttribute("aria-pressed",x===b)); revealed=false; renderCard();
+}));
+$("#incDone").addEventListener("change",startDeck);
+
+// ---------- Backup ----------
+function showLastBackup(){
+  let t=null; try{ t=localStorage.getItem(BKEY); }catch(e){}
+  $("#lastBackup").textContent = t ? new Date(+t).toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"}) : "jamais";
+}
+$("#exportBtn").addEventListener("click",async()=>{
+  if(!entries.length) return toast("Le carnet est vide.");
+  const d=new Date(), name=`kalima-up-${d.toISOString().slice(0,10)}.json`;
+  const blob=new Blob([JSON.stringify({app:"kalima-up",version:2,exportedAt:d.toISOString(),entries,folders:liveFolders(),lessons:liveLessons()},null,2)],{type:"application/json"});
+  const file=new File([blob],name,{type:"application/json"});
+  try{
+    if(navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({files:[file],title:name}); }
+    else{ const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); a.remove(); }
+    try{ localStorage.setItem(BKEY,String(Date.now())); }catch(e){}
+    showLastBackup(); toast("Sauvegarde prête");
+  }catch(err){ if(err && err.name!=="AbortError") toast("L'export a échoué."); }
+});
+$("#importBtn").addEventListener("click",()=>$("#importFile").click());
+$("#importFile").addEventListener("change",async ev=>{
+  const f=ev.target.files[0]; ev.target.value=""; if(!f) return;
+  try{
+    const data=JSON.parse(await f.text()); const list=Array.isArray(data)?data:data.entries;
+    if(data && data.app==="carnet-anglais"){ toast("C'est une sauvegarde de Word Up (anglais) : importe-la dans Word Up."); return; }
+    if(!Array.isArray(list)) throw 0;
+    // Folders from the file are matched by name, created if missing.
+    const fmap={};
+    for(const f of (Array.isArray(data.folders)?data.folders:[])){
+      if(!f || f.deleted || !f.name) continue;
+      const have=liveFolders().find(x=>x.name.toLowerCase()===String(f.name).toLowerCase());
+      fmap[f.id] = (have || addFolder(String(f.name).slice(0,40), String(f.emoji||"").slice(0,8))).id;
+    }
+    const seen=new Set(entries.map(e=>(e.en+"|"+e.fr).toLowerCase())); let added=0;
+    for(const e of list){
+      if(!e || !e.en || !e.fr) continue;
+      const k=(e.en+"|"+e.fr).toLowerCase(); if(seen.has(k)) continue; seen.add(k);
+      entries.push({id:uid(),en:String(e.en),fr:String(e.fr),note:String(e.note||""),exEn:String(e.exEn||""),exFr:String(e.exFr||""),tip:String(e.tip||""),ar:String(e.ar||""),exAr:String(e.exAr||""),folder:fmap[e.folder]||"",origin:e.origin==="fr"?"fr":"en",status:e.status==="learned"?"learned":"new",createdAt:+e.createdAt||Date.now()});
+      added++;
+    }
+    const titles=new Set(liveLessons().map(l=>l.title.toLowerCase()));
+    for(const l of (Array.isArray(data.lessons)?data.lessons:[])){
+      if(!l || l.deleted || !l.title || !l.body || titles.has(String(l.title).toLowerCase())) continue;
+      titles.add(String(l.title).toLowerCase());
+      lessons.push({id:uid(),title:String(l.title).slice(0,120),emoji:String(l.emoji||"📘").slice(0,16),body:String(l.body),createdAt:+l.createdAt||Date.now(),updatedAt:Date.now()}); added++;
+    }
+    persistLessons();
+    save(); render(); toast(added?`${added} entrée(s) importée(s)`:"Rien de nouveau dans ce fichier");
+  }catch(e){ toast("Ce fichier n'est pas une sauvegarde du carnet."); }
+});
+
+// ---------- Prof : discussion avec Claude et cours ----------
+const LESSONS_KEY="kalima-up-lessons", CHAT_KEY="kalima-up-chat";
+let lessons=[]; try{ lessons=JSON.parse(localStorage.getItem(LESSONS_KEY))||[]; }catch(e){}
+let chat=[]; try{ chat=JSON.parse(localStorage.getItem(CHAT_KEY))||[]; }catch(e){}
+let chatBusy=false, profMode="chat", openLessonId=null, confirmDelLesson=false, confirmNewChat=false;
+const liveLessons = () => lessons.filter(l=>!l.deleted).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+function persistLessons(){ try{ localStorage.setItem(LESSONS_KEY, JSON.stringify(lessons)); }catch(e){ toast("Impossible d'enregistrer le cours."); } }
+function persistChat(){ try{ localStorage.setItem(CHAT_KEY, JSON.stringify(chat.slice(-80))); }catch(e){} }
+function applyRemoteLessons(remote){
+  const merged = mergeLists(lessons.map(l=>({...l})), remote);
+  const remoteAt = new Map(remote.map(l=>[l.id,+l.updatedAt||0]));
+  const changed = JSON.stringify(merged.map(l=>[l.id,l.updatedAt]).sort()) !== JSON.stringify(lessons.map(l=>[l.id,l.updatedAt]).sort());
+  lessons = merged; persistLessons();
+  if(merged.some(l=>remoteAt.get(l.id)!==(+l.updatedAt||0))) syncAgain=true;
+  if(changed && !$("#view-prof").hidden) renderProf();
+}
+
+// Small, safe Markdown → HTML (text is escaped first).
+function inlineMd(t){
+  return esc(t)
+    .replace(/`([^`]+)`/g,"<code>$1</code>")
+    .replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>")
+    .replace(/~~(.+?)~~/g,"<s>$1</s>")
+    .replace(/(^|[^*\w])\*(?!\s)(.+?)\*(?!\w)/g,"$1<em>$2</em>")
+    .replace(/(^|[^\w])_(?!\s)(.+?)_(?!\w)/g,"$1<em>$2</em>");
+}
+function md(src){
+  const lines=String(src||"").replace(/\r/g,"").split("\n"), out=[];
+  let list=null, para=[], table=null;
+  const flushP=()=>{ if(para.length){ out.push("<p>"+para.map(inlineMd).join("<br>")+"</p>"); para=[]; } };
+  const flushL=()=>{ if(list){ out.push(`<${list.t}>`+list.items.map(i=>"<li>"+inlineMd(i)+"</li>").join("")+`</${list.t}>`); list=null; } };
+  const flushT=()=>{ if(table){ out.push("<table>"+table.map((r,i)=>"<tr>"+r.map(c=>i?`<td>${inlineMd(c)}</td>`:`<th>${inlineMd(c)}</th>`).join("")+"</tr>").join("")+"</table>"); table=null; } };
+  const flush=()=>{ flushP(); flushL(); flushT(); };
+  for(const raw of lines){
+    const l=raw.trimEnd(); let m;
+    if(!l.trim()){ flush(); continue; }
+    if(/^\s*\|.*\|\s*$/.test(l)){
+      flushP(); flushL();
+      if(/^\s*\|[\s:|-]+\|\s*$/.test(l)) continue;
+      (table=table||[]).push(l.trim().slice(1,-1).split("|").map(c=>c.trim())); continue;
+    }
+    flushT();
+    if((m=l.match(/^\s*#{1,6}\s+(.*)$/))){ flush(); out.push("<h4>"+inlineMd(m[1].replace(/\*\*/g,""))+"</h4>"); continue; }
+    if((m=l.match(/^\s*[-*•]\s+(.*)$/))){ flushP(); if(!list||list.t!=="ul"){ flushL(); list={t:"ul",items:[]}; } list.items.push(m[1]); continue; }
+    if((m=l.match(/^\s*\d+[.)]\s+(.*)$/))){ flushP(); if(!list||list.t!=="ol"){ flushL(); list={t:"ol",items:[]}; } list.items.push(m[1]); continue; }
+    if((m=l.match(/^\s*>\s?(.*)$/))){ flush(); out.push("<blockquote>"+inlineMd(m[1])+"</blockquote>"); continue; }
+    if(/^\s*(-{3,}|\*{3,})\s*$/.test(l)){ flush(); continue; }
+    flushL(); para.push(l.trim());
+  }
+  flush();
+  return out.join("");
+}
+
+function setProfMode(m){
+  profMode=m; openLessonId=null;
+  document.querySelectorAll("[data-pmode]").forEach(x=>x.setAttribute("aria-pressed",x.dataset.pmode===m));
+  renderProf(); window.scrollTo(0,0);
+}
+document.querySelectorAll("[data-pmode]").forEach(b=>b.addEventListener("click",()=>setProfMode(b.dataset.pmode)));
+
+function renderProf(){
+  $("#countLessons").textContent = liveLessons().length;
+  $("#profChat").hidden = profMode!=="chat"; $("#profLessons").hidden = profMode!=="lessons";
+  if(profMode==="chat") renderChat(); else renderLessons();
+}
+function lessonHtml(l){ return `<h3><span>${esc(l.emoji||"📘")}</span><span>${esc(l.title)}</span></h3><div class="md">${md(l.body)}</div>`; }
+function renderChat(){
+  const log=$("#chatLog");
+  $("#chatSuggest").hidden = chat.length>0 || chatBusy;
+  $("#chatTop").hidden = chat.length===0;
+  $("#newChatBtn").textContent = confirmNewChat ? "Effacer la discussion ?" : "🗑 Nouvelle discussion";
+  let h="";
+  chat.forEach((m,i)=>{
+    if(m.role==="user") h+=`<div class="msg user">${m.ctx?`<span class="qctx">${esc(m.ctx.src)} → ${esc(m.ctx.tr)}</span>`:""}${esc(m.text)}</div>`;
+    else if(m.role==="err") h+=`<div class="msg err">${esc(m.text)}</div>`;
+    else if(m.role==="lesson"){
+      const saved = m.savedId && lessons.some(l=>l.id===m.savedId && !l.deleted);
+      h+=`<div class="lessonCard">${lessonHtml(m)}<div class="row">
+        <button type="button" class="btn${saved?" saved":""}" data-addlesson="${i}" ${saved?"disabled":""}>${saved?"✓ Dans mes cours":"➕ Ajouter à mes cours"}</button></div></div>`;
+    }else{
+      h+=`<div class="msg bot md">${md(m.text)}</div>`;
+      const last = i===chat.length-1 || !chat.slice(i+1).some(x=>x.role==="lesson"||x.role==="user");
+      if(m.offer && last && !chatBusy) h+=`<div class="botActs"><button type="button" class="btn small" data-mklesson="${i}">📘 Oui, crée la leçon</button></div>`;
+    }
+  });
+  if(chatBusy) h+=`<div class="msg bot"><span class="typing" aria-label="Claude écrit"><i></i><i></i><i></i></span></div>`;
+  log.innerHTML=h;
+  $("#chatSend").disabled = chatBusy;
+}
+function scrollChatEnd(){ requestAnimationFrame(()=>window.scrollTo({top:document.body.scrollHeight})); }
+const relayOld = msg => /Rien à traduire|Aucun mot|Requête illisible/.test(msg) ? "Le relais n'est pas à jour : recolle son nouveau code dans Cloudflare." : msg;
+const chatPayload = upto => chat.slice(0, upto).filter(m=>m.role==="user"||m.role==="bot").slice(-24)
+  .map(m=>({role:m.role==="user"?"user":"assistant", content:m.ctx ? ctxPrompt(m.ctx)+"\n\nMa question : "+m.text : m.text}));
+function ctxPrompt(c){
+  const sens = c.from==="fr" ? "du français vers le darija" : "du darija vers le français";
+  return `À propos de cette traduction proposée par l'app, ${sens} :\n« ${c.src} » → « ${c.tr} »`
+    + (c.alts&&c.alts.length ? `\nAutres possibilités proposées : ${c.alts.map(a=>"« "+a+" »").join(", ")}` : "")
+    + (c.note ? `\nContexte donné : ${c.note}` : "");
+}
+// Question about the current translation: it goes to the Prof discussion, with the translation as context.
+function askAboutTranslation(){
+  const q=$("#askInput").value.trim(); if(!q || !pending) return;
+  if(chatBusy){ toast("Claude répond encore à ta question précédente."); return; }
+  const ctx={src:pending.src, tr:pending.text, from:origin, alts:pending.alts||[], note:pending.ctx||""};
+  $("#askInput").value=""; $("#askBox").hidden=true; $("#askBtn").hidden=false; askFor=null;
+  if(profMode!=="chat") setProfMode("chat");
+  showTab("prof");
+  sendChat(q, ctx);
+}
+$("#askBtn").addEventListener("click",()=>{
+  askFor=pending ? pending.text+"|"+pending.src : null;
+  $("#askBtn").hidden=true; $("#askBox").hidden=false; $("#askInput").focus();
+});
+$("#askSend").addEventListener("click",askAboutTranslation);
+$("#askInput").addEventListener("keydown",ev=>{
+  if(ev.key==="Enter" && !ev.shiftKey && !ev.isComposing){ ev.preventDefault(); askAboutTranslation(); }
+});
+$("#askInput").addEventListener("input",()=>{ const t=$("#askInput"); t.style.height="auto"; t.style.height=Math.min(t.scrollHeight+2, innerHeight*0.3)+"px"; });
+
+async function sendChat(text, ctx){
+  text=String(text||"").trim(); if(!text || chatBusy) return;
+  if(!canTranslate()){ toast("Configure d'abord le relais dans les Réglages."); return; }
+  confirmNewChat=false;
+  chat.push(ctx ? {role:"user", text, ctx} : {role:"user", text}); persistChat();
+  $("#chatInput").value=""; autoGrow();
+  chatBusy=true; renderChat(); scrollChatEnd();
+  try{
+    const r = await callRelay(settings,{chat:true, messages:chatPayload(chat.length)},60000);
+    if(typeof r.reply!=="string") throw new Error("Rien à traduire");
+    chat.push({role:"bot", text:noAr(r.reply), offer:!!r.offer});
+  }catch(err){ chat.push({role:"err", text:relayOld(err.message)}); }
+  chatBusy=false; persistChat(); renderChat(); scrollChatEnd();
+}
+async function makeLesson(i){
+  if(chatBusy) return;
+  chatBusy=true; renderChat(); scrollChatEnd();
+  try{
+    const r = await callRelay(settings,{lesson:true, messages:chatPayload(i+1)},90000);
+    if(typeof r.body!=="string") throw new Error("Rien à traduire");
+    chat.push({role:"lesson", title:noAr(r.title)||"Leçon", emoji:r.emoji||"📘", body:noAr(r.body)});
+  }catch(err){ chat.push({role:"err", text:relayOld(err.message)}); }
+  chatBusy=false; persistChat(); renderChat(); scrollChatEnd();
+}
+$("#chatLog").addEventListener("click",ev=>{
+  const mk=ev.target.closest("[data-mklesson]"); if(mk){ makeLesson(+mk.dataset.mklesson); return; }
+  const add=ev.target.closest("[data-addlesson]");
+  if(add){
+    const m=chat[+add.dataset.addlesson]; if(!m || m.role!=="lesson") return;
+    const now=Date.now(), l={id:uid(), title:m.title, emoji:m.emoji, body:m.body, createdAt:now, updatedAt:now};
+    lessons.push(l); m.savedId=l.id; persistLessons(); persistChat(); scheduleSync();
+    $("#countLessons").textContent = liveLessons().length;
+    renderChat(); toast("Ajouté à tes cours 📚");
+  }
+});
+$("#chatSuggest").addEventListener("click",ev=>{ const b=ev.target.closest("button"); if(b) sendChat(b.textContent); });
+$("#chatForm").addEventListener("submit",ev=>{ ev.preventDefault(); sendChat($("#chatInput").value); });
+function autoGrow(){ const t=$("#chatInput"); t.style.height="auto"; t.style.height=Math.min(t.scrollHeight+2, innerHeight*0.4)+"px"; }
+$("#chatInput").addEventListener("input",autoGrow);
+$("#chatInput").addEventListener("keydown",ev=>{
+  if(ev.key==="Enter" && !ev.shiftKey && !ev.isComposing){ ev.preventDefault(); sendChat($("#chatInput").value); }
+});
+$("#newChatBtn").addEventListener("click",()=>{
+  if(chatBusy) return;
+  if(!confirmNewChat){ confirmNewChat=true; renderChat(); setTimeout(()=>{ if(confirmNewChat){ confirmNewChat=false; renderChat(); } },4000); return; }
+  confirmNewChat=false; chat=[]; persistChat(); renderChat();
+});
+
+function renderLessons(){
+  const list=$("#lessonList"), read=$("#lessonRead"), all=liveLessons();
+  const l = openLessonId && all.find(x=>x.id===openLessonId);
+  list.hidden=!!l; read.hidden=!l;
+  if(l){
+    read.innerHTML = `<div class="row"><button type="button" class="btn ghost small" data-lback>← Mes cours</button><span class="spacer"></span>
+      ${confirmDelLesson ? `<button type="button" class="btn ghost small" data-ldelno>Garder</button><button type="button" class="btn small" style="background:var(--danger)" data-ldelyes>Supprimer</button>`
+                         : `<button type="button" class="icon danger" data-ldel aria-label="Supprimer ce cours">🗑</button>`}</div>
+      ${lessonHtml(l)}`;
+    return;
+  }
+  list.innerHTML = all.length ? all.map(x=>`<li><button type="button" data-lopen="${esc(x.id)}"><span class="le">${esc(x.emoji||"📘")}</span><span class="lt">${esc(x.title)}</span>
+      <span class="ld">${new Date(x.createdAt||Date.now()).toLocaleDateString("fr-FR",{day:"numeric",month:"short"})}</span></button></li>`).join("")
+    : `<li class="empty"><strong>Aucun cours pour l'instant.</strong></li>`;
+}
+$("#profLessons").addEventListener("click",ev=>{
+  const t=ev.target.closest("button"); if(!t) return;
+  if(t.dataset.lopen){ openLessonId=t.dataset.lopen; confirmDelLesson=false; renderLessons(); window.scrollTo(0,0); }
+  else if("lback" in t.dataset){ openLessonId=null; confirmDelLesson=false; renderLessons(); }
+  else if("ldel" in t.dataset){ confirmDelLesson=true; renderLessons(); }
+  else if("ldelno" in t.dataset){ confirmDelLesson=false; renderLessons(); }
+  else if("ldelyes" in t.dataset){
+    const i=lessons.findIndex(x=>x.id===openLessonId);
+    if(i>=0){ lessons[i]={id:openLessonId, deleted:true, updatedAt:Date.now()}; persistLessons(); scheduleSync(); }
+    openLessonId=null; confirmDelLesson=false; renderProf(); toast("Cours supprimé");
+  }
+});
+
+// ---------- Offline ----------
+// Updates: an iPhone home-screen app often resumes without reloading, so check for a
+// new version each time the app comes back to the foreground, then reload into it.
+if("serviceWorker" in navigator){
+  const hadController = !!navigator.serviceWorker.controller;
+  let pendingReload = false;
+  const formIsEmpty = () => !["#enInput","#frInput","#noteInput","#chatInput","#askInput"].some(s=>$(s).value.trim()) && !editingId && !chatBusy;
+  navigator.serviceWorker.addEventListener("controllerchange",()=>{
+    if(!hadController) return;            // first install: nothing to refresh
+    if(formIsEmpty()) location.reload(); else pendingReload = true;
+  });
+  window.addEventListener("load",()=>{
+    navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).then(reg=>{
+      document.addEventListener("visibilitychange",()=>{
+        if(document.visibilityState==="visible") reg.update().catch(()=>{});
+        else if(pendingReload) location.reload();
+      });
+    }).catch(()=>{});
+  });
+}
+
+let savedOrigin="en"; try{ savedOrigin=localStorage.getItem("kalima-up-origin")||"en"; }catch(e){}
+setOrigin(savedOrigin==="fr"?"fr":"en");
+updateTranslateUI(); render(); setRevMode(revMode); setFolderSel(lastFolder());
+syncStatusIdle(); scheduleSync(500);
+</script>
+</body>
+</html>
