@@ -71,6 +71,7 @@ form.add{background:var(--card);border:1px solid var(--line);border-radius:16px;
 .rex-en{font-style:italic;color:var(--ink)}
 .rex-fr{font-size:14px;color:var(--muted)}
 .rtip{margin:0;font-size:14px;color:var(--ink)}
+.rengine{margin:0;font-size:12px;color:var(--muted)}
 .entry .ex{grid-column:1/-1;margin:0;font-size:14px;color:var(--muted);overflow-wrap:anywhere}
 .entry .ex i{color:var(--ink)}
 .face .ex{font-size:15px;color:var(--muted);max-width:50ch}
@@ -376,6 +377,7 @@ button.chip{cursor:pointer}
           <button class="icon" type="button" id="resultExSpeak" aria-label="Écouter l'exemple">🔊</button>
         </div>
         <p class="rtip" id="resultTip" hidden></p>
+        <p class="rengine" id="resultEngine" hidden></p>
         <button type="button" class="askBtn" id="askBtn">❓ Poser une question sur cette traduction</button>
         <div class="askBox" id="askBox" hidden>
           <textarea id="askInput" rows="1" placeholder="Ta question" enterkeyhint="send" aria-label="Ta question sur cette traduction" autocapitalize="sentences"></textarea>
@@ -498,7 +500,11 @@ button.chip{cursor:pointer}
       <label for="setPw">Mot de passe
         <input type="text" id="setPw" autocapitalize="off" spellcheck="false" placeholder="le même que dans Cloudflare">
       </label>
-      <p style="font-size:14px">Claude traduit en darija (en lettres latines, comme sur WhatsApp) et ajoute un exemple et une note d'usage.</p>
+      <div class="seg fullSeg" role="group" aria-label="Intelligence artificielle">
+        <button type="button" data-engine="claude" aria-pressed="true">🤖 Claude</button>
+        <button type="button" data-engine="openai" aria-pressed="false">💬 ChatGPT</button>
+      </div>
+      <p style="font-size:14px">L'IA choisie traduit en darija (en lettres latines, comme sur WhatsApp), ajoute un exemple et une note d'usage, trie tes mots et répond dans 🎓 Prof. L'autre sert de secours si elle ne répond pas.</p>
       <label for="voiceSel">Voix pour la prononciation 🔊
         <select id="voiceSel"></select>
       </label>
@@ -547,7 +553,7 @@ button.chip{cursor:pointer}
 <div class="sheet sortSheet" id="sortSheet" hidden role="dialog" aria-labelledby="sortTitle">
   <div class="sheetHead"><span id="sortTitle">✨ Tri automatique</span><button class="icon" type="button" id="sortClose" aria-label="Fermer">✕</button></div>
   <div id="sortSetup" class="sortBody">
-    <p class="sortIntro">Claude range tes mots dans tes dossiers et peut en créer de nouveaux. Tu vois le résultat avant que rien ne change.</p>
+    <p class="sortIntro"><span class="aiName">Claude</span> range tes mots dans tes dossiers et peut en créer de nouveaux. Tu vois le résultat avant que rien ne change.</p>
     <label for="sortHint">Consignes (facultatif)
       <input type="text" id="sortHint" maxlength="300" autocapitalize="sentences" placeholder="ex. crée un dossier Conjugaison pour les verbes">
     </label>
@@ -749,22 +755,30 @@ applyTheme();
 
 // ---------- Settings ----------
 const SKEY="kalima-up-settings";
-let settings={url:"",pw:"",voice:""};
+let settings={url:"",pw:"",voice:"",engine:"claude"};
+const aiName = () => settings.engine==="openai" ? "ChatGPT" : "Claude";
+function applyAiName(){ document.querySelectorAll(".aiName").forEach(e=>e.textContent=aiName()); }
 try{ Object.assign(settings, JSON.parse(localStorage.getItem(SKEY))||{}); }catch(e){}
 function saveSettings(){ try{ localStorage.setItem(SKEY,JSON.stringify(settings)); return true; }catch(e){ toast("Impossible d'enregistrer les réglages."); return false; } }
 const canTranslate = () => !!(settings.url && settings.pw);
 function fillSettings(){
   $("#setUrl").value=settings.url; $("#setPw").value=settings.pw;
   fillVoiceSel(settings.voice||"");
+  document.querySelectorAll("[data-engine]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.engine===(settings.engine||"claude")));
+  applyAiName();
 }
 function readSettingsForm(){
   let url=$("#setUrl").value.trim().replace(/\/+$/,"");
   if(url && !/^https?:\/\//i.test(url)) url="https://"+url;
-  return {url, pw:$("#setPw").value.trim(), voice:$("#voiceSel").value||""};
+  const engine=(document.querySelector("[data-engine][aria-pressed=true]")||{}).dataset?.engine||"claude";
+  return {url, pw:$("#setPw").value.trim(), voice:$("#voiceSel").value||"", engine};
 }
+document.querySelectorAll("[data-engine]").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll("[data-engine]").forEach(x=>x.setAttribute("aria-pressed",x===b));
+}));
 $("#settingsForm").addEventListener("submit",ev=>{
   ev.preventDefault(); settings=readSettingsForm();
-  if(saveSettings()){ pickVoice(); updateTranslateUI(); renderSwap(); render(); toast("Réglages enregistrés"); syncNow(); }
+  if(saveSettings()){ pickVoice(); applyAiName(); updateTranslateUI(); renderSwap(); render(); toast("Réglages enregistrés"); syncNow(); }
 });
 $("#testBtn").addEventListener("click",async()=>{
   const s=readSettingsForm(), out=$("#testResult");
@@ -773,7 +787,8 @@ $("#testBtn").addEventListener("click",async()=>{
   try{
     const r = await callRelay(s,{ping:true});
     if(r.app!=="kalima-up"){ out.textContent="✗ Ce relais n'est pas celui de Kalima Up (c'est peut-être celui de Word Up) : vérifie l'adresse."; return; }
-    const eng = r.claude ? "Claude" : "clé Claude manquante (ANTHROPIC_KEY)";
+    const eng = r.claude && r.openai ? "Claude + ChatGPT" : r.claude ? "Claude seulement (pas de clé OPENAI_KEY)"
+      : r.openai ? "ChatGPT seulement (pas de clé ANTHROPIC_KEY)" : "aucune clé d'IA (ANTHROPIC_KEY ou OPENAI_KEY)";
     out.textContent = "✓ Connexion réussie · " + eng + " · " + (r.sync ? "synchro active" : "synchro pas encore activée");
   }
   catch(err){ out.textContent="✗ "+err.message; }
@@ -860,13 +875,13 @@ $("#syncBtn").addEventListener("click",()=>syncNow(true));
 window.addEventListener("online",()=>scheduleSync(300));
 document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible") scheduleSync(300); });
 
-// ---------- Translation (via your Cloudflare relay → Claude) ----------
+// ---------- Translation (via your Cloudflare relay → Claude or ChatGPT) ----------
 async function callRelay(s, body, timeout=15000){
   if(!navigator.onLine) throw new Error("Pas de connexion internet.");
   const ctrl=new AbortController(), timer=setTimeout(()=>ctrl.abort(),timeout);
   let res;
   try{
-    res=await fetch(s.url,{method:"POST",headers:{"Content-Type":"application/json","X-App-Password":s.pw},body:JSON.stringify(body),signal:ctrl.signal});
+    res=await fetch(s.url,{method:"POST",headers:{"Content-Type":"application/json","X-App-Password":s.pw},body:JSON.stringify({engine:settings.engine||"claude", ...body}),signal:ctrl.signal});
   }catch(e){ throw new Error(e.name==="AbortError"?"Le relais met trop de temps à répondre.":"Relais injoignable : vérifie l'adresse."); }
   finally{ clearTimeout(timer); }
   let data={}; try{ data=await res.json(); }catch(e){}
@@ -910,7 +925,7 @@ async function fetchTranslation(){
   if(r.folder) suggestFolder(r.folder);
   // ar = écriture arabe du darija (la traduction si on traduit vers le darija, sinon le texte tapé) ; jamais affichée.
   return { text:noAr(r.translation), alts:(r.alternatives||[]).map(noAr), altsAr:r.alternativesAr||[], ar:r.ar||"",
-           exEn:noAr(r.example||""), exAr:r.exampleAr||"", exFr:noAr(r.exampleFr||""), tip:noAr(r.note||""), engine:"claude" };
+           exEn:noAr(r.example||""), exAr:r.exampleAr||"", exFr:noAr(r.exampleFr||""), tip:noAr(r.note||""), engine:r.engine||"claude", fallback:!!r.fallback, reason:r.reason||"" };
 }
 // Extras (example, note) of the last translation, kept so they can be saved with the word.
 let lastExtras=null; // {origin, src, text, exEn, exFr, tip, ar, exAr}
@@ -1104,7 +1119,7 @@ $("#sortRun").addEventListener("click",async()=>{
   try{
     for(let i=0;i<words.length;i+=CH){
       const part=words.slice(i,i+CH);
-      $("#sortStatus").textContent = words.length>CH ? `Claude trie… (${Math.min(i+CH,words.length)}/${words.length})` : "Claude trie tes mots…";
+      $("#sortStatus").textContent = words.length>CH ? `${aiName()} trie… (${Math.min(i+CH,words.length)}/${words.length})` : `${aiName()} trie tes mots…`;
       const r = await callRelay(settings,{sortWords:true, hint, folders:known, words:part.map(e=>({en:e.en, fr:e.fr, note:e.note||""}))});
       if(!Array.isArray(r.assign)) throw new Error("Le relais n'est pas à jour : recolle son nouveau code dans Cloudflare.");
       for(const f of (r.newFolders||[])) if(!known.some(k=>k.name.toLowerCase()===f.name.toLowerCase())){ known.push(f); created.push(f); }
@@ -1135,7 +1150,7 @@ function showSortPreview(){
   const order=[...groups.entries()].sort((a,b)=>b[1].total-a[1].total);
   $("#sortSummary").textContent = moved
     ? `${moved} mot${moved>1?"s":""} changeraient de dossier${created.length?`, et ${created.length} nouveau${created.length>1?"x":""} dossier${created.length>1?"s":""} serai${created.length>1?"ent":"t"} créé${created.length>1?"s":""}`:""}. Vérifie, puis touche Appliquer.`
-    : "Claude ne propose aucun changement : tes mots sont déjà bien rangés.";
+    : `${aiName()} ne propose aucun changement : tes mots sont déjà bien rangés.`;
   $("#sortPreview").innerHTML = order.map(([name,g])=>`<div class="sortGroup">
       <h3>${esc(emojiOf(name))} ${esc(name)} ${isNew(name)?'<span class="new">nouveau</span>':""}<span class="cnt">· ${g.total} mot${g.total>1?"s":""}${g.movedWords.length?` (dont ${g.movedWords.length} déplacé${g.movedWords.length>1?"s":""})`:""}</span></h3>
       ${g.movedWords.length?`<p>${g.movedWords.slice(0,8).map(esc).join(" · ")}${g.movedWords.length>8?` · +${g.movedWords.length-8}`:""}</p>`:""}
@@ -1336,6 +1351,8 @@ function showResult(){
     $("#resultExFr").textContent = pending.exFr||"";
     $("#resultTip").hidden = !pending.tip;
     $("#resultTip").textContent = pending.tip ? "💡 "+pending.tip : "";
+    $("#resultEngine").hidden = !pending.fallback;
+    $("#resultEngine").textContent = pending.fallback ? "Traduit avec "+(pending.engine==="openai"?"ChatGPT":"Claude")+" ("+(pending.reason||"IA choisie indisponible")+")" : "";
     if(askFor!==pending.text+"|"+pending.src){ askFor=null; $("#askBox").hidden=true; $("#askBtn").hidden=false; }
   }
   updateKnown();
@@ -1482,7 +1499,7 @@ function setFolderSel(id){ fillFolderSel(); $("#folderSel").value = folderById(i
 function suggestFolder(name){
   if(editingId) return;
   const f = liveFolders().find(x=>x.name.toLowerCase()===String(name).toLowerCase()); if(!f) return;
-  if($("#folderSel").value!==f.id){ setFolderSel(f.id); $("#folderHint").textContent="suggéré par Claude"; }
+  if($("#folderSel").value!==f.id){ setFolderSel(f.id); $("#folderHint").textContent="suggéré par "+aiName(); }
 }
 let selBefore="";
 $("#folderSel").addEventListener("focus",()=>{ selBefore=$("#folderSel").value; });
@@ -1823,7 +1840,7 @@ function renderChat(){
       if(m.offer && last && !chatBusy) h+=`<div class="botActs"><button type="button" class="btn small" data-mklesson="${i}">📘 Oui, crée la leçon</button></div>`;
     }
   });
-  if(chatBusy) h+=`<div class="msg bot"><span class="typing" aria-label="Claude écrit"><i></i><i></i><i></i></span></div>`;
+  if(chatBusy) h+=`<div class="msg bot"><span class="typing" aria-label="${aiName()} écrit"><i></i><i></i><i></i></span></div>`;
   log.innerHTML=h;
   $("#chatSend").disabled = chatBusy;
 }
@@ -1840,7 +1857,7 @@ function ctxPrompt(c){
 // Question about the current translation: it goes to the Prof discussion, with the translation as context.
 function askAboutTranslation(){
   const q=$("#askInput").value.trim(); if(!q || !pending) return;
-  if(chatBusy){ toast("Claude répond encore à ta question précédente."); return; }
+  if(chatBusy){ toast(aiName()+" répond encore à ta question précédente."); return; }
   const ctx={src:pending.src, tr:pending.text, from:origin, alts:pending.alts||[], note:pending.ctx||""};
   $("#askInput").value=""; $("#askBox").hidden=true; $("#askBtn").hidden=false; askFor=null;
   if(profMode!=="chat") setProfMode("chat");
@@ -1868,6 +1885,7 @@ async function sendChat(text, ctx){
     const r = await callRelay(settings,{chat:true, messages:chatPayload(chat.length)},60000);
     if(typeof r.reply!=="string") throw new Error("Rien à traduire");
     chat.push({role:"bot", text:noAr(r.reply), offer:!!r.offer});
+    if(r.fallback) toast("Réponse de "+(r.engine==="openai"?"ChatGPT":"Claude")+" ("+r.reason+")");
   }catch(err){ chat.push({role:"err", text:relayOld(err.message)}); }
   chatBusy=false; persistChat(); renderChat(); scrollChatEnd();
 }

@@ -30,7 +30,11 @@ Installée sur l'iPhone et le PC du propriétaire. Toujours répondre en frança
   reste identique) ; `origin: "en"` veut dire « darija → français ».
 - « Déjà dans ton carnet » tolère les petites différences d'orthographe (`djKeys` : chokran = choukran
   = shukran, 3afak = 3afek, bslama = beslama, mzyan = mzian…).
-- Pas de DeepL (il ne gère pas le darija) : Claude seul.
+- Pas de DeepL (il ne gère pas le darija). Deux IA au choix dans ⚙️ Réglages : **Claude** ou **ChatGPT**
+  (API OpenAI), l'autre sert de secours (`withEngine` dans le relais). L'app envoie `engine: "claude"|"openai"`
+  dans chaque demande ; les deux reçoivent exactement les mêmes consignes darija. Modèle ChatGPT : variable
+  `OPENAI_MODEL` (défaut `chat-latest`, le modèle de l'app ChatGPT). Les réglages OpenAI refusés par un
+  modèle (température, effort de réflexion, format JSON) sont retirés automatiquement.
 - Couleurs : thème marocain à elle (sable, rouge, vert, safran, frise de zellige sous le titre), différent
   de Word Up. Variables CSS en haut de `index.html` ; `--blue` = couleur principale (rouge), nom gardé de Word Up.
 
@@ -76,7 +80,10 @@ Quand le propriétaire écrit **« Rollback N »** (ex. « Rollback 3 »), reven
    Garder le préfixe `kalima-v` (jamais `carnet-v`).
 4. Tester rapidement (page chargée sans erreur), commit « Rollback vers la version N », push,
    et ajouter la ligne correspondante dans `HISTORIQUE.md`.
-5. Dire au propriétaire ce qu'il perd par rapport à la version d'avant (voir `HISTORIQUE.md`).
+5. Dire au propriétaire ce qu'il perd par rapport à la version d'avant (voir `HISTORIQUE.md`), notamment :
+   - avant v3 : plus de choix Claude / ChatGPT (l'app utilise Claude ; si le relais n'a que la clé OpenAI,
+     ChatGPT répond quand même) ;
+   - avant v2 : couleurs de Word Up (bleu) au lieu du thème marocain.
    Ses mots ne sont jamais touchés : ils sont dans le téléphone et dans la base Cloudflare, pas dans le code.
 6. Un rollback se défait par un autre rollback (« Rollback 2 » pour revenir à la version d'avant).
 
