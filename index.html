@@ -920,7 +920,7 @@ async function fetchTranslation(){
     text, source: fromFr?"FR":"DARIJA", target: fromFr?"DARIJA":"FR",
     context: $("#noteInput").value.trim(),
     folders: liveFolders().map(f=>f.name)
-  });
+  }, 45000);
   if(!r.translation || !noAr(r.translation)) throw new Error("Aucune traduction reçue.");
   if(r.folder) suggestFolder(r.folder);
   // ar = écriture arabe du darija (la traduction si on traduit vers le darija, sinon le texte tapé) ; jamais affichée.
@@ -989,7 +989,7 @@ async function speakDarija(text, ar, keep){
   // iPhone : la voix doit démarrer pendant le toucher, on la « réveille » avant d'attendre Claude.
   try{ speechSynthesis.cancel(); speechSynthesis.speak(new SpeechSynthesisUtterance(" ")); }catch(e){}
   try{
-    const r = await callRelay(settings,{script:true, texts:[text]});
+    const r = await callRelay(settings,{script:true, texts:[text]}, 30000);
     const a = (Array.isArray(r.ar) && r.ar[0]) || "";
     if(!a) throw new Error(Array.isArray(r.ar) ? "Lecture impossible pour ce texte." : "Rien à traduire");
     if(keep) keep(a);
@@ -1120,7 +1120,7 @@ $("#sortRun").addEventListener("click",async()=>{
     for(let i=0;i<words.length;i+=CH){
       const part=words.slice(i,i+CH);
       $("#sortStatus").textContent = words.length>CH ? `${aiName()} trie… (${Math.min(i+CH,words.length)}/${words.length})` : `${aiName()} trie tes mots…`;
-      const r = await callRelay(settings,{sortWords:true, hint, folders:known, words:part.map(e=>({en:e.en, fr:e.fr, note:e.note||""}))});
+      const r = await callRelay(settings,{sortWords:true, hint, folders:known, words:part.map(e=>({en:e.en, fr:e.fr, note:e.note||""}))}, 120000);
       if(!Array.isArray(r.assign)) throw new Error("Le relais n'est pas à jour : recolle son nouveau code dans Cloudflare.");
       for(const f of (r.newFolders||[])) if(!known.some(k=>k.name.toLowerCase()===f.name.toLowerCase())){ known.push(f); created.push(f); }
       for(const [idx,name] of r.assign) if(part[idx]) assign.set(part[idx].id, name);
@@ -1882,7 +1882,7 @@ async function sendChat(text, ctx){
   $("#chatInput").value=""; autoGrow();
   chatBusy=true; renderChat(); scrollChatEnd();
   try{
-    const r = await callRelay(settings,{chat:true, messages:chatPayload(chat.length)},60000);
+    const r = await callRelay(settings,{chat:true, messages:chatPayload(chat.length)},90000);
     if(typeof r.reply!=="string") throw new Error("Rien à traduire");
     chat.push({role:"bot", text:noAr(r.reply), offer:!!r.offer});
     if(r.fallback) toast("Réponse de "+(r.engine==="openai"?"ChatGPT":"Claude")+" ("+r.reason+")");
@@ -1893,7 +1893,7 @@ async function makeLesson(i){
   if(chatBusy) return;
   chatBusy=true; renderChat(); scrollChatEnd();
   try{
-    const r = await callRelay(settings,{lesson:true, messages:chatPayload(i+1)},90000);
+    const r = await callRelay(settings,{lesson:true, messages:chatPayload(i+1)},120000);
     if(typeof r.body!=="string") throw new Error("Rien à traduire");
     chat.push({role:"lesson", title:noAr(r.title)||"Leçon", emoji:r.emoji||"📘", body:noAr(r.body)});
   }catch(err){ chat.push({role:"err", text:relayOld(err.message)}); }

@@ -18,8 +18,8 @@ Installée sur l'iPhone et le PC du propriétaire. Toujours répondre en frança
 - **Jamais d'écriture arabe à l'écran.** Le darija s'écrit en lettres latines avec chiffres, comme sur
   WhatsApp (3 = ع, 7 = ح, 9 = ق, 2 = ء, kh = خ, gh = غ, ch = ش). `noAr()` retire toute écriture arabe
   de ce qui vient de Claude, côté app et côté relais.
-- **Orthographe fixe** : les règles et la liste de référence sont dans `SPELLING` (relais). Traduction
-  à `temperature: 0`. Darija du quotidien, pas l'arabe classique ; variante de Casablanca/Rabat, et la
+- **Orthographe fixe** : les règles et la liste de référence sont dans `SPELLING` (relais). Le relais
+  demande `temperature: 0`, retirée automatiquement par les modèles qui la refusent (Claude Opus/Sonnet 5.5…). Darija du quotidien, pas l'arabe classique ; variante de Casablanca/Rabat, et la
   différence régionale est signalée dans la note.
 - **Voix 🔊** : aucune voix ne lit le darija en lettres latines. Claude donne aussi l'écriture arabe
   du mot et de l'exemple (champs `ar` et `exAr`), gardée en coulisse et lue par une voix arabe de
@@ -35,6 +35,9 @@ Installée sur l'iPhone et le PC du propriétaire. Toujours répondre en frança
   dans chaque demande ; les deux reçoivent exactement les mêmes consignes darija. Modèle ChatGPT : variable
   `OPENAI_MODEL` (défaut `chat-latest`, le modèle de l'app ChatGPT). Les réglages OpenAI refusés par un
   modèle (température, effort de réflexion, format JSON) sont retirés automatiquement.
+- Modèle Claude par défaut : `claude-opus-5-5` (variable `CLAUDE_MODEL` pour en changer). Les modèles récents
+  réfléchissent avant de répondre : `callClaude` laisse de la place (`max_tokens` ≥ 8000) et retire les réglages
+  refusés ; l'app attend jusqu'à 45 s une traduction, 90 s une réponse du Prof, 120 s une leçon ou un tri.
 - Couleurs : thème marocain à elle (sable, rouge, vert, safran, frise de zellige sous le titre), différent
   de Word Up. Variables CSS en haut de `index.html` ; `--blue` = couleur principale (rouge), nom gardé de Word Up.
 

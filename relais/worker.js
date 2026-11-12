@@ -9,7 +9,8 @@
 //   (au moins une des deux clés ; avec les deux, l'IA choisie dans l'app répond, l'autre sert de secours)
 //   APP_PASSWORD    (Secret) ton mot de passe pour Kalima Up, le même que dans l'app
 //   ALLOWED_ORIGIN  (Text, facultatif) https://kurapika936.github.io
-//   CLAUDE_MODEL    (Text, facultatif) par défaut claude-haiku-4-5-20251001
+//   CLAUDE_MODEL    (Text, facultatif) par défaut claude-opus-5-5 (le modèle de l'app Claude) ;
+//                   moins cher : claude-sonnet-5-5 ou claude-haiku-5-5
 //   PROF_MODEL      (Text, facultatif) modèle Claude de l'onglet Prof ; par défaut le même que CLAUDE_MODEL
 //   OPENAI_MODEL    (Text, facultatif) par défaut chat-latest (le modèle de l'app ChatGPT)
 //   OPENAI_PROF_MODEL (Text, facultatif) modèle ChatGPT de l'onglet Prof ; par défaut le même que OPENAI_MODEL
@@ -25,7 +26,7 @@ const KEY = "carnet";
 const FKEY = "dossiers";
 const LKEY = "cours";
 const MAX_ENTRIES = 20000;
-const DEFAULT_MODEL = "claude-haiku-4-5-20251001";
+const DEFAULT_MODEL = "claude-opus-5-5";
 const DEFAULT_OPENAI_MODEL = "chat-latest";
 const AI_NAME = { claude: "Claude", openai: "ChatGPT" };
 
@@ -120,21 +121,34 @@ function parseJsonObject(t) {
 function claudeError(status, msg) {
   return status === 401 ? "clé Claude refusée"
        : /credit balance/i.test(msg) ? "crédit Claude épuisé"
+       : status === 404 || /model[^.]*(not found|does not exist|invalid)/i.test(msg) ? "modèle Claude introuvable (vérifie CLAUDE_MODEL)"
        : status === 429 ? "trop de demandes d'affilée"
        : status === 529 || status >= 500 ? "Claude est surchargé" : `erreur Claude ${status}`;
 }
+// Les modèles récents (Opus 5.5, Sonnet 5.5…) réfléchissent avant de répondre et refusent la température :
+// on laisse de la place à la réflexion, et un réglage refusé est retiré avant de redemander.
 async function callClaude(env, model, payload) {
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: { "x-api-key": env.ANTHROPIC_KEY.trim(), "anthropic-version": "2023-06-01", "content-type": "application/json" },
-    body: JSON.stringify({ model: model.trim(), ...payload }),
-  });
-  if (!res.ok) {
+  const body = { model: model.trim(), ...payload };
+  body.max_tokens = Math.max(8000, (Number(payload.max_tokens) || 1000) * 4);
+  const optional = ["temperature", "output_config"];
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "x-api-key": env.ANTHROPIC_KEY.trim(), "anthropic-version": "2023-06-01", "content-type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      const text = (data?.content || []).filter(c => c.type === "text").map(c => c.text || "").join("");
+      if (!text.trim()) throw new Error(data?.stop_reason === "max_tokens" ? "réponse Claude coupée" : "réponse Claude vide");
+      return text;
+    }
     let msg = ""; try { msg = (await res.json())?.error?.message || ""; } catch {}
+    const bad = optional.find(k => k in body && (msg.includes(k) || (k === "output_config" && /effort/i.test(msg))));
+    if (res.status === 400 && bad) { delete body[bad]; continue; }
     throw new Error(claudeError(res.status, msg));
   }
-  const data = await res.json();
-  return (data?.content || []).map(c => c.text || "").join("");
+  throw new Error("Claude refuse la demande");
 }
 function openaiError(status, code, msg) {
   return status === 401 ? "clé OpenAI refusée"
@@ -181,8 +195,9 @@ function callAI(env, engine, kind, payload) {
     return callOpenAI(env, model, payload);
   }
   const model = (kind === "prof" && env.PROF_MODEL) || env.CLAUDE_MODEL || DEFAULT_MODEL;
-  const { system, messages, max_tokens, temperature } = payload;
-  return callClaude(env, model, { system, messages, max_tokens, ...(temperature !== undefined ? { temperature } : {}) });
+  const { system, messages, max_tokens, temperature, effort } = payload;
+  return callClaude(env, model, { system, messages, max_tokens, ...(temperature !== undefined ? { temperature } : {}),
+    ...(effort ? { output_config: { effort } } : {}) });
 }
 const hasKey = (env, e) => !!(e === "openai" ? env.OPENAI_KEY : env.ANTHROPIC_KEY);
 // Essaie l'IA choisie ; si elle échoue (ou n'a pas de clé), l'autre prend le relais.
@@ -231,7 +246,7 @@ async function scriptAI(ask, texts) {
 Keep the Darija words as they are (do not translate them into classical Arabic). If a text is French or not Darija, return "".
 Reply with ONLY a JSON object, no other text: {"ar": ["...", "..."]} with one item per input text, in the same order.`;
   const raw = await ask("main", {
-    max_tokens: 1500, temperature: 0, json: true, system,
+    max_tokens: 1500, temperature: 0, json: true, effort: "low", system,
     messages: [{ role: "user", content: "Texts:\n" + JSON.stringify(texts) }],
   });
   const j = parseJsonObject(raw);

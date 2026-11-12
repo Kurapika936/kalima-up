@@ -2,7 +2,7 @@
 // Kalima Up partage le site kurapika936.github.io avec Word Up : ses caches portent le préfixe
 // « kalima- » et elle ne touche JAMAIS aux autres caches (ceux de Word Up s'appellent « carnet-vN »).
 const PREFIX = "kalima-";
-const VERSION = "kalima-v3";
+const VERSION = "kalima-v4";
 const FILES = ["./", "index.html", "manifest.webmanifest", "kalima-180.png", "kalima-192.png", "kalima-512.png"];
 
 const fill = () => caches.open(VERSION).then(c => c.addAll(FILES.map(f => new Request(f, { cache: "reload" }))));
