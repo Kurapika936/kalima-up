@@ -1,0 +1,67 @@
+# Met à jour le relais Cloudflare « kalima-relais » chaque fois que son code change sur main.
+# Secrets GitHub nécessaires (Settings → Secrets and variables → Actions) :
+#   CLOUDFLARE_API_TOKEN   clé Cloudflare (modèle « Edit Cloudflare Workers »)
+#   CLOUDFLARE_ACCOUNT_ID  identifiant du compte Cloudflare
+name: Relais Cloudflare
+
+on:
+  push:
+    branches: [main]
+    paths: ["relais/**", ".github/workflows/relais.yml"]
+  workflow_dispatch:
+
+concurrency:
+  group: relais
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: relais
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Vérifier les secrets
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::error::Ajoute CLOUDFLARE_API_TOKEN et CLOUDFLARE_ACCOUNT_ID dans Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+
+      - name: Vérifier le code du relais
+        run: node --input-type=module --check < worker.js
+
+      - name: Retrouver la base KV « kalima-mots »
+        run: |
+          resp=$(curl -fsS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/storage/kv/namespaces?per_page=100")
+          id=$(echo "$resp" | jq -r '.result[] | select(.title == "kalima-mots") | .id' | head -1)
+          if [ -z "$id" ]; then
+            echo "::error::Base KV « kalima-mots » introuvable sur ce compte : déploiement annulé pour ne pas débrancher la synchro."
+            echo "Bases trouvées : $(echo "$resp" | jq -r '[.result[].title] | join(", ")')"
+            exit 1
+          fi
+          sed -i "s/__KV_ID__/$id/" wrangler.toml
+          echo "Base kalima-mots trouvée."
+
+      - name: Déployer sur Cloudflare
+        run: npx --yes wrangler@4 deploy
+
+      - name: Vérifier que le relais répond
+        run: |
+          sleep 5
+          sub=$(curl -fsS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/subdomain" | jq -r '.result.subdomain')
+          body=$(curl -sS "https://kalima-relais.$sub.workers.dev/")
+          echo "Réponse du relais : $body"
+          echo "$body" | grep -q "Utilise POST" || { echo "::error::Le relais ne répond pas comme prévu."; exit 1; }

@@ -9,8 +9,15 @@ Installée sur l'iPhone et le PC du propriétaire. Toujours répondre en frança
 - `index.html` : toute l'app (HTML, CSS, JS dans un seul fichier). Partie de l'index.html de Word Up v39.
 - `sw.js` : cache hors ligne. `const VERSION = "kalima-vN"` = **numéro de version de l'app**.
 - `manifest.webmanifest`, `kalima-*.png` : nom et icônes de l'app installée.
-- `relais/worker.js` : copie du code du relais Cloudflare (Worker `kalima-relais`, base KV à lui).
-  Le relais réel est sur Cloudflare : Claude ne peut pas le déployer, le propriétaire recolle le code.
+- `relais/worker.js` : code du relais Cloudflare (Worker `kalima-relais`, base KV `kalima-mots` à lui).
+- `relais/wrangler.toml` + `.github/workflows/relais.yml` : **déploiement automatique du relais**. Tout push
+  sur `main` qui touche `relais/` met le Worker à jour (GitHub Actions + Wrangler). L'identifiant de la base KV
+  est retrouvé par son nom `kalima-mots` (le déploiement s'arrête s'il ne la trouve pas). Secrets GitHub :
+  `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`. Les secrets du Worker (`ANTHROPIC_KEY`, `OPENAI_KEY`,
+  `APP_PASSWORD`) restent sur Cloudflare et ne sont jamais touchés ; `keep_vars = true` garde les variables
+  texte du tableau de bord. Après un push, vérifier le résultat avec
+  `gh run list --repo Kurapika936/kalima-up --workflow relais.yml` (et `gh run view <id> --log-failed`).
+  Le relais doit donc être testé (relais local simulé) **avant** de pousser, comme l'app.
 - `HISTORIQUE.md` : ce que chaque version a apporté.
 - Hébergement : GitHub Pages, branche `main`, https://kurapika936.github.io/kalima-up/
 

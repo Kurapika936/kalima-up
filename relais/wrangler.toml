@@ -1,0 +1,15 @@
+# Configuration du Worker Cloudflare « kalima-relais », utilisée par le déploiement automatique
+# (.github/workflows/relais.yml). Les secrets (ANTHROPIC_KEY, OPENAI_KEY, APP_PASSWORD) restent sur
+# Cloudflare : un déploiement ne les touche jamais.
+name = "kalima-relais"
+main = "worker.js"
+compatibility_date = "2026-10-01"
+workers_dev = true
+# Garde les variables texte réglées dans le tableau de bord Cloudflare (ALLOWED_ORIGIN, CLAUDE_MODEL…).
+keep_vars = true
+
+# La base de Kalima Up. L'identifiant est retrouvé à chaque déploiement par son nom « kalima-mots »
+# (jamais celle de Word Up) ; le déploiement s'arrête s'il ne la trouve pas.
+[[kv_namespaces]]
+binding = "WORDS"
+id = "__KV_ID__"
