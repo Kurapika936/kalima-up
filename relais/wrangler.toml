@@ -3,10 +3,22 @@
 # Cloudflare : un déploiement ne les touche jamais.
 name = "kalima-relais"
 main = "worker.js"
-compatibility_date = "2026-10-01"
+compatibility_date = "2026-11-11"
 workers_dev = true
-# Garde les variables texte réglées dans le tableau de bord Cloudflare (ALLOWED_ORIGIN, CLAUDE_MODEL…).
+preview_urls = false
+# Garde les autres variables texte réglées dans le tableau de bord Cloudflare (CLAUDE_MODEL, OPENAI_MODEL…).
 keep_vars = true
+
+[vars]
+# Seule l'app Kalima Up (sur kurapika936.github.io) peut appeler le relais depuis un navigateur.
+ALLOWED_ORIGIN = "https://kurapika936.github.io"
+
+# Journaux visibles dans Cloudflare (Workers → kalima-relais → Logs), utiles en cas de souci.
+[observability]
+enabled = true
+
+[observability.logs]
+enabled = true
 
 # La base de Kalima Up. L'identifiant est retrouvé à chaque déploiement par son nom « kalima-mots »
 # (jamais celle de Word Up) ; le déploiement s'arrête s'il ne la trouve pas.

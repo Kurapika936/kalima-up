@@ -25,11 +25,11 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 24
 
       - name: Vérifier les secrets
         run: |
@@ -65,3 +65,7 @@ jobs:
           body=$(curl -sS "https://kalima-relais.$sub.workers.dev/")
           echo "Réponse du relais : $body"
           echo "$body" | grep -q "Utilise POST" || { echo "::error::Le relais ne répond pas comme prévu."; exit 1; }
+          # Une autre adresse que celle de l'app doit être refusée (ALLOWED_ORIGIN bien en place).
+          other=$(curl -sS -X POST -H "Origin: https://exemple.invalid" -H "Content-Type: application/json" -d '{"ping":true}' "https://kalima-relais.$sub.workers.dev/")
+          echo "Autre adresse : $other"
+          echo "$other" | grep -q "pas autorisée" || { echo "::error::ALLOWED_ORIGIN n'est pas appliqué."; exit 1; }
